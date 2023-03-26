@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div>查询所有复试人员</div>
+    <div>院线均分</div>
   </div>
 </template>
 
@@ -24,7 +24,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 }, {})
 
 export default {
-  name: 'QueryAllTable',
+  name: 'QueryAcademyGenerateScoreTable',
   // components: { Pagination },
   directives: { waves },
   filters: {

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div>查询所有复试人员</div>
+    <div>2023年国家线</div>
   </div>
 </template>
 
@@ -24,7 +24,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 }, {})
 
 export default {
-  name: 'QueryAllTable',
+  name: 'QueryNationLineTable',
   // components: { Pagination },
   directives: { waves },
   filters: {
