@@ -49,7 +49,6 @@
         type = "primary"
         icon = "el-icon-edit"
         @click = "handleCreate"
-        disabled
       >
         {{ '添加' }}
       </el-button>
@@ -203,29 +202,23 @@
         label-width = "140px"
         style = "width: 400px; margin-left:50px;"
       >
-        <el-form-item label = "复试线主键" prop = "id">
-          <el-input placeholder = "请输入复试线主键" v-model = "temp.id" :disabled = "true"></el-input>
+        <el-form-item label = "院线主键" prop = "id">
+          <el-input placeholder = "请输入院线主键     primary key" v-model = "temp.id"></el-input>
         </el-form-item>
-        <el-form-item label = "初试排名" prop = "rank">
-          <el-input placeholder = "请输入初试排名" v-model = "temp.rank" :disabled = "true"></el-input>
+        <el-form-item label = "专业代码" prop = "professionCode">
+          <el-input placeholder = "请输入专业代码" v-model = "temp.professionCode"></el-input>
         </el-form-item>
-        <el-form-item label = "学生姓名" prop = "studentName">
-          <el-input placeholder = "请输入学生姓名" v-model = "temp.studentName" :disabled = "true"></el-input>
+        <el-form-item label = "专业名称" prop = "professionName">
+          <el-input placeholder = "请输入专业名称" v-model = "temp.professionName"></el-input>
         </el-form-item>
-        <el-form-item label = "学生编号" prop = "studentCode">
-          <el-input placeholder = "请输入学生编号" v-model = "temp.studentCode" :disabled = "true"></el-input>
+        <el-form-item label = "考试方式" prop = "testWay">
+          <el-input placeholder = "请输入考试方式" v-model = "temp.testWay"></el-input>
         </el-form-item>
-        <el-form-item label = "学科代码" prop = "subjectCode">
-          <el-input placeholder = "请输入学科代码" v-model = "temp.subjectCode" :disabled = "true"></el-input>
+        <el-form-item label = "政治成绩" prop = "scorePolite">
+          <el-input placeholder = "请输入政治成绩" v-model = "temp.scorePolite"></el-input>
         </el-form-item>
-        <el-form-item label = "学科名称" prop = "subjectName">
-          <el-input placeholder = "请输入学科名称" v-model = "temp.subjectName" :disabled = "true"></el-input>
-        </el-form-item>
-        <el-form-item label = "政治" prop = "scorePolite">
-          <el-input placeholder = "请输入政治" v-model = "temp.scorePolite"></el-input>
-        </el-form-item>
-        <el-form-item label = "英语" prop = "scoreEnglish">
-          <el-input placeholder = "请输入英语" v-model = "temp.scoreEnglish"></el-input>
+        <el-form-item label = "英语成绩" prop = "scoreEnglish">
+          <el-input placeholder = "请输入英语成绩" v-model = "temp.scoreEnglish"></el-input>
         </el-form-item>
         <el-form-item label = "专业课一" prop = "scoreProfessional1">
           <el-input placeholder = "请输入专业课一" v-model = "temp.scoreProfessional1"></el-input>
@@ -233,19 +226,33 @@
         <el-form-item label = "专业课二" prop = "scoreProfessional2">
           <el-input placeholder = "请输入专业课二" v-model = "temp.scoreProfessional2"></el-input>
         </el-form-item>
-        <el-form-item label = "初试总分" prop = "scoreTotal">
-          <el-input placeholder = "请输入初试总分" v-model = "temp.scoreTotal" :disabled = "true"></el-input>
+        <el-form-item label = "复试线总分" prop = "scoreTotal">
+          <el-input placeholder = "请输入复试线总分" v-model = "temp.scoreTotal"></el-input>
         </el-form-item>
-        <el-form-item label = "初试公共课总分" prop = "scoreTotalPublic">
-          <el-input placeholder = "请输入初试公共课总分" v-model = "temp.scoreTotalPublic"
-                    :disabled = "true"></el-input>
+        <el-form-item label = "公共课总分院线" prop = "scoreTotalPublic">
+          <el-input placeholder = "请输入公共课总分院线" v-model = "temp.scoreTotalPublic"></el-input>
         </el-form-item>
-        <el-form-item label = "初试专业课总分" prop = "scoreTotalProfessional">
-          <el-input placeholder = "请输入初试专业课总分" v-model = "temp.scoreTotalProfessional"
-                    :disabled = "true"></el-input>
+        <el-form-item label = "专业课总分院线" prop = "scoreTotalProfessional">
+          <el-input placeholder = "请输入专业课总分院线" v-model = "temp.scoreTotalProfessional"></el-input>
         </el-form-item>
-        <el-form-item label = "备注" prop = "remark">
-          <el-input placeholder = "请输入备注" v-model = "temp.remark"></el-input>
+        <el-form-item label = "培养方式" prop = "trainingMode">
+          <el-input placeholder = "请输入培养方式" v-model = "temp.trainingMode"></el-input>
+        </el-form-item>
+        <el-form-item label = "学位类型" prop = "degreeType">
+          <el-input placeholder = "请输入学位类型" v-model = "temp.degreeType"></el-input>
+        </el-form-item>
+        <el-form-item label = "研究方向" prop = "researchDirection">
+          <el-input placeholder = "请输入研究方向" v-model = "temp.researchDirection"></el-input>
+        </el-form-item>
+        <el-form-item label = "推免生人数" prop = "numberOfStudentsExempted">
+          <el-input placeholder = "请输入推免生人数" v-model = "temp.numberOfStudentsExempted"></el-input>
+        </el-form-item>
+        <el-form-item label = "统考生人数" prop = "numberOfStudentsEnrolledInTheUnifiedExamination">
+          <el-input placeholder = "请输入统考生人数"
+                    v-model = "temp.numberOfStudentsEnrolledInTheUnifiedExamination"></el-input>
+        </el-form-item>
+        <el-form-item label = "学院名称" prop = "academyName">
+          <el-input placeholder = "请输入学院名称" v-model = "temp.academyName"></el-input>
         </el-form-item>
       </el-form>
       <div slot = "footer" class = "dialog-footer">
@@ -333,11 +340,9 @@ export default {
       showMoreInfo: false,
       temp: {
         id: undefined,
-        rank: undefined,
-        studentName: '',
-        studentCode: '',
-        subjectCode: 1,
-        subjectName: '',
+        professionCode: undefined,
+        professionName: '',
+        testWay: '',
         scorePolite: '',
         scoreEnglish: '',
         scoreProfessional1: '',
@@ -345,7 +350,12 @@ export default {
         scoreTotal: '',
         scoreTotalPublic: '',
         scoreTotalProfessional: '',
-        remark: '',
+        trainingMode: '',
+        degreeType: '',
+        researchDirection: '',
+        numberOfStudentsExempted: '',
+        numberOfStudentsEnrolledInTheUnifiedExamination: '',
+        academyName: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',

@@ -90,7 +90,7 @@
         <template slot-scope = "{row}">
           <span class = "link-type" @click = "handleUpdate(row)">{{ row.studentName }}</span>
           <!--todo 这里放专业-->
-          <el-tag>{{ row.studentCode | subjectCodeFilter }}</el-tag>
+          <!--<el-tag>{{ row.subjectCode | subjectCodeFilter }}</el-tag>-->
         </template>
       </el-table-column>
       <!--==========================================================================-->
@@ -152,7 +152,13 @@
         width = "120px"
         sortable
         align = "center"
-      />
+      >
+        <template slot-scope = "{row}">
+          <el-tag :type = "row.subjectName | subjectNameFilter">
+            {{ row.subjectName }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column v-if = "showMoreInfo" :label = "'专业代码'" width = "110px" sortable align = "center">
         <template slot-scope = "{row}">
           <span style = "color:red;">{{ row.subjectCode }}</span>
@@ -178,7 +184,7 @@
           <el-button v-if = "row.status!='deleted'" size = "mini" type = "default" @click = "handleHide(row,$index)">
             {{ '隐藏' }}
           </el-button>
-          <el-button v-if = "row.status!='deleted'" size = "mini" type = "danger" @click = "handleDelete(row,$index)">
+          <el-button v-if = "row.status!='deleted'" size = "mini" type = "danger" @click = "handleDelete(row,$index)" disabled>
             {{ '删除' }}
           </el-button>
         </template>
@@ -299,11 +305,11 @@ export default {
   components: {Pagination},
   directives: {waves},
   filters: {
-    statusFilter(status) {
+    subjectNameFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
+        '马克思主义理论': 'success',
+        '科学技术史': 'info',
+        '科学技术哲学': 'default'
       }
       return statusMap[status]
     },
@@ -320,10 +326,9 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        subjectCode: '030500',
-        isChecked: undefined,
-        studentName: undefined,
-        type: undefined,
+        studentName: '',// 学生姓名
+        subjectCode: '',// 专业代码
+        isChecked: '',// 是否录取
         sort: '0'
       },
       isCheckedOptions,
