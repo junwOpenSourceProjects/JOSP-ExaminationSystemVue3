@@ -19,6 +19,22 @@
         <el-option v-for = "item in isCheckedOptions" :key = "item.key" :label = "item.display_name"
                    :value = "item.key"/>
       </el-select>
+      <!--todo 查询学院的名称，回调回来-->
+      <el-select
+        v-model = "listQuery.subjectCode"
+        :placeholder = "'学院名称'"
+        clearable
+        class = "filter-item"
+        style = "width: 130px"
+      >
+        <el-option
+          v-for = "item in subjectCodeOptions"
+          :key = "item.key"
+          :label = "item.display_name+'('+item.key+')'"
+          :value = "item.key"
+        />
+      </el-select>
+      <!--todo 根据学院的名称，查询出专业代码-->
       <el-select
         v-model = "listQuery.subjectCode"
         :placeholder = "'专业代码'"
@@ -79,23 +95,6 @@
       style = "width: 100%;"
       @sort-change = "sortChange"
     >
-      <!--<el-table-column-->
-      <!--  :label="$t('table.id')"-->
-      <!--  prop="id"-->
-      <!--  sortable="custom"-->
-      <!--  align="center"-->
-      <!--  width="80"-->
-      <!--  :class-name="getSortClass('id')"-->
-      <!--&gt;-->
-      <!--  <template slot-scope="{row}">-->
-      <!--    <span>{{ row.id }}</span>-->
-      <!--  </template>-->
-      <!--</el-table-column>-->
-      <!--<el-table-column :label="$t('table.date')" width="150px" align="center">-->
-      <!--  <template slot-scope="{row}">-->
-      <!--    <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
-      <!--  </template>-->
-      <!--</el-table-column>-->
       <el-table-column
         type = "index"
         label = "序号"
@@ -110,19 +109,7 @@
           <el-tag>{{ row.studentCode | subjectCodeFilter }}</el-tag>
         </template>
       </el-table-column>
-      <!--<el-table-column :label="$t('table.author')" width="110px" align="center">-->
-      <!--  <template slot-scope="{row}">-->
-      <!--    <span>{{ row.author }}</span>-->
-      <!--  </template>-->
-      <!--</el-table-column>-->
       <!--==========================================================================-->
-      <!--<el-table-column-->
-      <!--  prop="studentCode"-->
-      <!--  label="考生编号"-->
-      <!--  width="180px"-->
-      <!--  sortable-->
-      <!--  align="center"-->
-      <!--/>-->
       <el-table-column
         prop = "scorePolite"
         label = "政治"
@@ -170,25 +157,11 @@
           <span style = "color:red;">{{ row.scoreTotalPublic }}</span>
         </template>
       </el-table-column>
-      <!--<el-table-column-->
-      <!--  prop="scoreTotalPublic"-->
-      <!--  label="公共课总分"-->
-      <!--  width="120px"-->
-      <!--  sortable-->
-      <!--  align="center"-->
-      <!--/>-->
       <el-table-column v-if = "showMoreInfo" :label = "'专业课总分'" width = "120px" sortable align = "center">
         <template slot-scope = "{row}">
           <span style = "color:red;">{{ row.scoreTotalProfessional }}</span>
         </template>
       </el-table-column>
-      <!--<el-table-column-->
-      <!--  prop="scoreTotalProfessional"-->
-      <!--  label="专业课总分"-->
-      <!--  width="120px"-->
-      <!--  sortable-->
-      <!--  align="center"-->
-      <!--/>-->
       <el-table-column
         prop = "subjectName"
         label = "专业名称"
@@ -206,61 +179,18 @@
           <span style = "color:red;">{{ row.studentCode }}</span>
         </template>
       </el-table-column>
-      <!--      <el-table-column-->
-      <!--  prop="subjectCode"-->
-      <!--  label="专业代码"-->
-      <!--  width="120px"-->
-      <!--  sortable-->
-      <!--  align="center"-->
-      <!--/>-->
-      <!--      <el-table-column-->
-      <!--  prop="remark"-->
-      <!--  label="备注"-->
-      <!--  width="120px"-->
-      <!--  sortable-->
-      <!--  align="center"-->
-      <!--/>-->
       <!--==========================================================================-->
       <el-table-column v-if = "showMoreInfo" :label = "'显示备注'" width = "110px" align = "center">
         <template slot-scope = "{row}">
           <span style = "color:red;">{{ row.remark }}</span>
         </template>
       </el-table-column>
-      <!--<el-table-column :label="$t('table.isChecked')" width="80px">-->
-      <!--  <template slot-scope="{row}">-->
-      <!--    <svg-icon v-for="n in +row.isChecked" :key="n" icon-class="star" class="meta-item__icon" />-->
-      <!--  </template>-->
-      <!--</el-table-column>-->
-      <!--<el-table-column :label="$t('table.readings')" align="center" width="95">-->
-      <!--  <template slot-scope="{row}">-->
-      <!--    <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>-->
-      <!--    <span v-else>0</span>-->
-      <!--  </template>-->
-      <!--</el-table-column>-->
-      <!--<el-table-column :label="$t('table.status')" class-name="status-col" width="100">-->
-      <!--  <template slot-scope="{row}">-->
-      <!--    <el-tag :type="row.status | statusFilter">-->
-      <!--      {{ row.status }}-->
-      <!--    </el-tag>-->
-      <!--  </template>-->
-      <!--</el-table-column>-->
       <el-table-column :label = "$t('table.actions')" align = "center" width = "280px"
                        class-name = "small-padding fixed-width">
         <template slot-scope = "{row,$index}">
           <el-button type = "primary" size = "mini" @click = "handleUpdate(row)">
             {{ $t('table.edit') }}
           </el-button>
-          <!--<el-button-->
-          <!--  v-if="row.status!='published'"-->
-          <!--  size="mini"-->
-          <!--  type="success"-->
-          <!--  @click="handleModifyStatus(row,'published')"-->
-          <!--&gt;-->
-          <!--  {{ $t('table.publish') }}-->
-          <!--</el-button>-->
-          <!--<el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">-->
-          <!--  {{ $t('table.draft') }}-->
-          <!--</el-button>-->
           <el-button v-if = "row.status!='deleted'" size = "mini" type = "default" @click = "handleHide(row,$index)">
             {{ '隐藏' }}
           </el-button>
@@ -289,11 +219,6 @@
         label-width = "140px"
         style = "width: 400px; margin-left:50px;"
       >
-        <!--<div slot="header" class="header clearfix">-->
-        <!--    <span>review_list</span>-->
-        <!--    <el-button v-if="!ischeck && !isFind" class="fr" type="primary" @click="validate('ruleForm')">提交</el-button>-->
-        <!--    <el-button v-else class="fr" type="primary" @click="goBack">返回</el-button>-->
-        <!--</div>-->
         <el-form-item label = "复试线主键" prop = "id">
           <el-input placeholder = "请输入复试线主键" v-model = "temp.id" :disabled = "true"></el-input>
         </el-form-item>
@@ -362,7 +287,7 @@
 </template>
 
 <script>
-import {fetchReviewListMarxism, insertOrUpdateReviewListMarxism} from '@/api/examination'
+import {fetchReviewListAll, insertOrUpdateReviewListAll} from '@/api/examination'
 import waves from '@/directive/waves' // waves directive
 import {parseTime} from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -383,10 +308,10 @@ const subjectCodeKeyValue = subjectCodeOptions.reduce((acc, cur) => {
   return acc
 }, {})
 
-const excelName = '马克思主义理论复试名单'
+const excelName = '所有专业复试名单'
 
 export default {
-  name: 'QueryMaxismReviewListTable',
+  name: 'QueryReviewListAllTable',
   components: {Pagination},
   directives: {waves},
   filters: {
@@ -411,7 +336,7 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        subjectCode: '030500',
+        subjectCode: '',
         isChecked: undefined,
         studentName: undefined,
         type: undefined,
@@ -437,10 +362,6 @@ export default {
         scoreTotalPublic: '',
         scoreTotalProfessional: '',
         remark: '',
-        // isChecked: 1,
-        // timestamp: new Date(),
-        // type: '',
-        // status: 'published'
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -464,7 +385,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchReviewListMarxism(this.listQuery).then(response => {
+      fetchReviewListAll(this.listQuery).then(response => {
         this.list = response.data.records
         this.total = response.data.total
 
@@ -475,7 +396,7 @@ export default {
       })
     },
     handleFilter() {
-      // todo 这里如果没有条件，就默认查询马院的三个代码
+      // todo 先查学院，再查专业
       this.listQuery.page = 1
       this.getList()
     },
@@ -484,13 +405,6 @@ export default {
       this.listQuery.studentName = ''
       this.getList()
     },
-    // handleModifyStatus(row, status) {
-    //   this.$message({
-    //     message: '操作成功',
-    //     type: 'success'
-    //   })
-    //   row.status = status
-    // },
     sortChange(data) {
       const {prop, order} = data
       if (prop === 'id') {
@@ -508,12 +422,19 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        isChecked: 1,
-        remark: '',
-        // timestamp: new Date(),
+        rank: undefined,
         studentName: '',
-        status: 'published',
-        type: ''
+        studentCode: '',
+        subjectCode: '',
+        subjectName: '',
+        scorePolite: '',
+        scoreEnglish: '',
+        scoreProfessional1: '',
+        scoreProfessional2: '',
+        scoreTotal: '',
+        scoreTotalPublic: '',
+        scoreTotalProfessional: '',
+        remark: '',
       }
     },
     handleCreate() {
@@ -527,9 +448,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          insertOrUpdateReviewListMarxism(this.temp).then(() => {
+          insertOrUpdateReviewListAll(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -544,7 +463,6 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      // this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -555,11 +473,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          // console.log("我是数据："+JSON.stringify(tempData))
-          // tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          insertOrUpdateReviewListMarxism(tempData).then(() => {
-            // const index = this.list.findIndex(v => v.id === this.temp.id)
-            // this.list.splice(index, 1, this.temp)
+          insertOrUpdateReviewListAll(tempData).then(() => {
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -581,19 +495,13 @@ export default {
       this.list.splice(index, 1)
     }, handleDelete(row, index) {
       this.$notify({
-        title: '删除成功',
-        message: '永久删除',
+        title: '暂无删除',
+        message: '暂无删除',
         type: 'success',
         duration: 2000
       })
       this.list.splice(index, 1)
     },
-    // handleFetchPv(pv) {
-    //   fetchPv(pv).then(response => {
-    //     this.pvData = response.data.pvData
-    //     this.dialogPvVisible = true
-    //   })
-    // },
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
@@ -619,10 +527,6 @@ export default {
         }
       }))
     },
-    // getSortClass: function (key) {
-    //   const sort = this.listQuery.sort
-    //   return sort === `+${key}` ? 'ascending' : 'descending'
-    // }
   }
 }
 </script>

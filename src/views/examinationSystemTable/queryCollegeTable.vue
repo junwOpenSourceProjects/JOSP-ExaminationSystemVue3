@@ -1,32 +1,167 @@
 <template>
-  <div class="app-container">
-    <div>学院名称</div>
+  <div class = "app-container">
+    <div class = "filter-container">
+      <el-input
+        v-model = "listQuery.academyName"
+        :placeholder = "'学院名称'"
+        style = "width: 500px;"
+        class = "filter-item"
+        clearable
+        @keyup.enter.native = "handleFilter"
+
+      />
+      <el-button v-waves class = "filter-item" type = "primary" icon = "el-icon-search" @click = "handleFilter">
+        {{ '搜索' }}
+      </el-button>
+      <el-button v-waves class = "filter-item" type = "primary" icon = "el-icon-search" @click = "handleFilterRefresh">
+        <!--todo 没有设置清空表单的方法-->
+        {{ '重置条件' }}
+      </el-button>
+      <el-button
+        v-waves
+        :loading = "downloadLoading"
+        class = "filter-item"
+        type = "primary"
+        icon = "el-icon-download"
+        @click = "handleDownload"
+      >
+        {{ '导出' }}
+      </el-button>
+      <el-checkbox v-model = "showMoreInfo" class = "filter-item" style = "margin-left:15px;"
+                   @change = "tableKey=tableKey+1">
+        {{ '展示更多' }}
+      </el-checkbox>
+    </div>
+
+    <el-table
+      :key = "tableKey"
+      v-loading = "listLoading"
+      :data = "list"
+      border
+      fit
+      highlight-current-row
+      style = "width: 100%;"
+      @sort-change = "sortChange"
+    >
+      <el-table-column
+        type = "index"
+        label = "序号"
+        width = "120px"
+        sortable
+        align = "center"
+      />
+      <!--==========================================================================-->
+      <el-table-column
+        prop = "academyCode"
+        label = "学院编号"
+        width = "120px"
+        sortable
+        align = "center"
+      />
+      <el-table-column
+        prop = "academyName"
+        label = "学院名称"
+        width = "500px"
+        sortable
+        align = "center"
+      />
+      <!--==========================================================================-->
+      <el-table-column v-if = "showMoreInfo" :label = "'显示备注'" width = "110px" align = "center">
+        <template slot-scope = "{row}">
+          <span style = "color:red;">{{ row.remark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label = "$t('table.actions')" align = "center" width = "280px"
+                       class-name = "small-padding fixed-width">
+        <template slot-scope = "{row,$index}">
+          <el-button type = "primary" size = "mini" @click = "handleUpdate(row)">
+            {{ $t('table.edit') }}
+          </el-button>
+          <el-button v-if = "row.status!='deleted'" size = "mini" type = "default" @click = "handleHide(row,$index)">
+            {{ '隐藏' }}
+          </el-button>
+        </template>
+      </el-table-column>
+
+    </el-table>
+
+    <pagination
+      v-show = "total>0"
+      :total = "total"
+      :page.sync = "listQuery.page"
+      :limit.sync = "listQuery.limit"
+      @pagination = "getList"
+    />
+    <!--新增和编辑的弹窗-->
+    <el-dialog :title = "textMap[dialogStatus]" :visible.sync = "dialogFormVisible">
+      <el-form
+        ref = "dataForm"
+        :rules = "rules"
+        :model = "temp"
+        label-position = "left"
+        label-width = "140px"
+        style = "width: 400px; margin-left:50px;"
+      >
+        <el-form-item label = "复试线主键" prop = "id">
+          <el-input placeholder = "请输入复试线主键" v-model = "temp.id" :disabled = "true"></el-input>
+        </el-form-item>
+        <el-form-item label = "学院代码" prop = "academyCode">
+          <el-input placeholder = "请输入学院代码" v-model = "temp.academyCode" :disabled = "true"></el-input>
+        </el-form-item>
+        <el-form-item label = "学院名称" prop = "academyName">
+          <el-input placeholder = "请输入学院名称" v-model = "temp.academyName" :disabled = "true"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot = "footer" class = "dialog-footer">
+        <el-button @click = "dialogFormVisible = false">
+          {{ $t('table.cancel') }}
+        </el-button>
+        <el-button type = "primary" @click = "dialogStatus==='create'?createData():updateData()">
+          {{ $t('table.confirm') }}
+        </el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog :visible.sync = "dialogPvVisible" title = "Reading statistics">
+      <el-table :data = "pvData" border fit highlight-current-row style = "width: 100%">
+        <el-table-column prop = "key" label = "Channel"/>
+        <el-table-column prop = "pv" label = "Pv"/>
+      </el-table>
+      <span slot = "footer" class = "dialog-footer">
+        <el-button type = "primary" @click = "dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchReviewListMarxism, fetchPv, createArticle, updateArticle } from '@/api/article'
+import {fetchCollege, insertOrUpdateCollege} from '@/api/examination'
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
-// import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
+import {parseTime} from '@/utils'
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+// 专业代码
+const subjectCodeOptions = [
+  {key: '030500', display_name: '马克思主义理论'},
+  {key: '071200', display_name: '科学技术史'},
+  {key: '010108', display_name: '科学技术哲学'}
+]
+const isCheckedOptions = [
+  {key: '0', display_name: '录取'},
+  {key: '1', display_name: '落榜'}
 ]
 
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
+// arr to obj, such as { 030500 : "马克思主义理论", 071200 : "科学技术史" }
+const subjectCodeKeyValue = subjectCodeOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
   return acc
 }, {})
 
+const excelName = '学院名称表'
+
 export default {
   name: 'QueryCollegeTable',
-  // components: { Pagination },
-  directives: { waves },
+  components: {Pagination},
+  directives: {waves},
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -36,8 +171,8 @@ export default {
       }
       return statusMap[status]
     },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
+    subjectCodeFilter(type) {
+      return subjectCodeKeyValue[type]
     }
   },
   data() {
@@ -49,24 +184,18 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        importance: undefined,
-        studentName: undefined,
-        type: undefined,
-        sort: '+id'
+        academyName: '',
+        sort: '0'
       },
-      importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
+      isCheckedOptions,
+      subjectCodeOptions,
+      sortOptions: [{label: '高分优先', key: '0'}, {label: '低分优先', key: '1'}],
       statusOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
+      showMoreInfo: false,
       temp: {
         id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        studentName: '',
-        type: '',
-        status: 'published'
+        academyCode: '',
+        academyName: '',
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -77,9 +206,9 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        studentName: [{ required: true, message: 'studentName is required', trigger: 'blur' }]
+        type: [{required: true, message: 'type is required', trigger: 'change'}],
+        timestamp: [{type: 'date', required: true, message: 'timestamp is required', trigger: 'change'}],
+        academyName: [{required: true, message: 'academyName is required', trigger: 'blur'}]
       },
       downloadLoading: false
     }
@@ -90,7 +219,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchReviewListMarxism(this.listQuery).then(response => {
+      fetchCollege(this.listQuery).then(response => {
         this.list = response.data.records
         this.total = response.data.total
 
@@ -101,18 +230,17 @@ export default {
       })
     },
     handleFilter() {
+      // todo 这里如果没有条件，就默认查询马院的三个代码
       this.listQuery.page = 1
       this.getList()
     },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作成功',
-        type: 'success'
-      })
-      row.status = status
+    handleFilterRefresh() {
+      this.listQuery.page = 1
+      this.listQuery.academyName = ''
+      this.getList()
     },
     sortChange(data) {
-      const { prop, order } = data
+      const {prop, order} = data
       if (prop === 'id') {
         this.sortByID(order)
       }
@@ -128,12 +256,8 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        studentName: '',
-        status: 'published',
-        type: ''
+        academyCode: '',
+        academyName: '',
       }
     },
     handleCreate() {
@@ -147,9 +271,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
+          insertOrUpdateCollege(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -164,7 +286,6 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -175,10 +296,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
+          insertOrUpdateCollege(tempData).then(() => {
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -190,31 +308,35 @@ export default {
         }
       })
     },
-    handleDelete(row, index) {
+    handleHide(row, index) {
       this.$notify({
-        title: '成功',
-        message: '删除成功',
+        title: '隐藏成功',
+        message: '刷新后再次出现',
+        type: 'success',
+        duration: 2000
+      })
+      this.list.splice(index, 1)
+    }, handleDelete(row, index) {
+      this.$notify({
+        title: '暂无删除',
+        message: '暂无删除',
         type: 'success',
         duration: 2000
       })
       this.list.splice(index, 1)
     },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
-    },
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'studentName', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'studentName', 'type', 'importance', 'status']
+        // 设置文件头
+        const tHeader = ['id', '学院代码', '学院名称', '复试进度']
+        // 设置文件需要的展示列
+        const filterVal = ['id', 'academyCode', 'academyName', 'reviewStatus']
         const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: 'table-list'
+          filename: excelName
         })
         this.downloadLoading = false
       })
@@ -228,10 +350,6 @@ export default {
         }
       }))
     },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
-    }
   }
 }
 </script>

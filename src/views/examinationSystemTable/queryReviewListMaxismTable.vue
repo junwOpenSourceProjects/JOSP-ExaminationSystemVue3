@@ -271,7 +271,7 @@
 </template>
 
 <script>
-import {fetchAcademyGenerateScore, insertOrUpdateAcademyGenerateScore} from '@/api/examination'
+import {fetchReviewListMarxism, insertOrUpdateReviewListMarxism} from '@/api/examination'
 import waves from '@/directive/waves' // waves directive
 import {parseTime} from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -292,10 +292,10 @@ const subjectCodeKeyValue = subjectCodeOptions.reduce((acc, cur) => {
   return acc
 }, {})
 
-const excelName = '查询院线均分'
+const excelName = '马克思主义理论复试名单'
 
 export default {
-  name: 'QueryAcademyGenerateScoreTable',
+  name: 'QueryReviewListMaxismTable',
   components: {Pagination},
   directives: {waves},
   filters: {
@@ -369,7 +369,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchAcademyGenerateScore(this.listQuery).then(response => {
+      fetchReviewListMarxism(this.listQuery).then(response => {
         this.list = response.data.records
         this.total = response.data.total
 
@@ -432,7 +432,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          insertOrUpdateAcademyGenerateScore(this.temp).then(() => {
+          insertOrUpdateReviewListMarxism(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -457,7 +457,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          insertOrUpdateAcademyGenerateScore(tempData).then(() => {
+          insertOrUpdateReviewListMarxism(tempData).then(() => {
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',

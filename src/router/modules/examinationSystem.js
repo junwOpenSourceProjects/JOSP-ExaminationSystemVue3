@@ -13,15 +13,15 @@ const examinationSystemRouter = {
   },
   children: [
     {
-      path: 'QueryMaxismReviewListTable',
-      component: () => import('@/views/examinationSystemTable/testTable.vue'),
-      name: 'QueryMaxismReviewListTable',
+      path: 'QueryReviewListMaxismTable',
+      component: () => import('@/views/examinationSystemTable/queryReviewListMaxismTable.vue'),
+      name: 'QueryReviewListMaxismTable',
       meta: {title: '马院复试名单'}
     },
     {
-      path: 'queryAllTable',
-      component: () => import('@/views/examinationSystemTable/queryAllTable.vue'),
-      name: 'queryAllTable',
+      path: 'queryReviewListAllTable',
+      component: () => import('@/views/examinationSystemTable/queryReviewListAllTable.vue'),
+      name: 'queryReviewListAllTable',
       meta: {title: '所有学院复试名单'}
     },
     {
