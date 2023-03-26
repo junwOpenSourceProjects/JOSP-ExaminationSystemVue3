@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { fetchMergeDatabaseList, fetchPv, createArticle, updateArticle } from '@/api/article'
+import { fetchReviewListMarxism, fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 // import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -90,7 +90,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchMergeDatabaseList(this.listQuery).then(response => {
+      fetchReviewListMarxism(this.listQuery).then(response => {
         this.list = response.data.records
         this.total = response.data.total
 

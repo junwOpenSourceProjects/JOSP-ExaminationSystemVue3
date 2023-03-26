@@ -13,47 +13,46 @@ const examinationSystemRouter = {
   },
   children: [
     {
-      path: 'testTable',
-      component: () => import('@/views/examinationSystemTable/testTable'),
-      name: 'testTable',
-      meta: { title: '测试表' }
+      path: 'QueryMaxismReviewListTable',
+      component: () => import('@/views/examinationSystemTable/testTable.vue'),
+      name: 'QueryMaxismReviewListTable',
+      meta: {title: '马院复试名单'}
     },
-        {
-      path: 'queryNationLineTable',
-      component: () => import('@/views/examinationSystemTable/queryNationLineTable.vue'),
-      name: 'queryNationLineTable',
-      meta: { title: '查询国家线' }
-    },
-
     {
       path: 'queryAllTable',
       component: () => import('@/views/examinationSystemTable/queryAllTable.vue'),
       name: 'queryAllTable',
-      meta: { title: '查询所有复试人员' }
+      meta: {title: '所有学院复试名单'}
     },
     {
-      path: 'QueryCollegeTable',
-      component: () => import('@/views/examinationSystemTable/queryCollegeTable.vue'),
-      name: 'QueryCollegeTable',
-      meta: { title: '学院名称' }
-    },
-            {
-      path: 'queryAcademyLineTable',
-      component: () => import('@/views/examinationSystemTable/queryAcademyLineTable.vue'),
-      name: 'queryAcademyLineTable',
-      meta: { title: '查询院线' }
-    },
-      {
-      path: 'queryAcademyGenerateScoreTable',
-      component: () => import('@/views/examinationSystemTable/queryAcademyGenerateScoreTable.vue'),
-      name: 'queryAcademyGenerateScoreTable',
-      meta: { title: '查询院线均分' }
+      path: 'queryNationLineTable',
+      component: () => import('@/views/examinationSystemTable/queryNationLineTable.vue'),
+      name: 'queryNationLineTable',
+      meta: {title: '查询国家线'}
     },
     {
       path: 'queryCollegeLineTable',
       component: () => import('@/views/examinationSystemTable/queryCollegeLineTable.vue'),
       name: 'queryCollegeLineTable',
-      meta: { title: '查询校线' }
+      meta: {title: '查询校线'}
+    },
+    {
+      path: 'queryAcademyLineTable',
+      component: () => import('@/views/examinationSystemTable/queryAcademyLineTable.vue'),
+      name: 'queryAcademyLineTable',
+      meta: {title: '查询院线'}
+    },
+    {
+      path: 'queryAcademyGenerateScoreTable',
+      component: () => import('@/views/examinationSystemTable/queryAcademyGenerateScoreTable.vue'),
+      name: 'queryAcademyGenerateScoreTable',
+      meta: {title: '查询院线均分'}
+    },
+    {
+      path: 'QueryCollegeTable',
+      component: () => import('@/views/examinationSystemTable/queryCollegeTable.vue'),
+      name: 'QueryCollegeTable',
+      meta: {title: '学院名称'}
     },
 
   ]

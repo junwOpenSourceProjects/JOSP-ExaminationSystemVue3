@@ -8,14 +8,6 @@ export function fetchList(query) {
   })
 }
 
-export function fetchMergeDatabaseList(query) {
-  return request({
-    url: '/vue-element-admin/MergeDatabase/list',
-    method: 'get',
-    params: query
-  })
-}
-
 export function fetchArticle(id) {
   return request({
     url: '/vue-element-admin/article/detail',

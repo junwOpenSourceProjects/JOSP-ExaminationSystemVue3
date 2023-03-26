@@ -1,80 +1,83 @@
 <template>
-  <div class="app-container">
-    <div class="filter-container">
+  <div class = "app-container">
+    <div class = "filter-container">
       <el-input
-        v-model="listQuery.studentName"
-        :placeholder="'姓名'"
-        style="width: 200px;"
-        class="filter-item"
+        v-model = "listQuery.studentName"
+        :placeholder = "'姓名'"
+        style = "width: 200px;"
+        class = "filter-item"
         clearable
-        @keyup.enter.native="handleFilter"
+        @keyup.enter.native = "handleFilter"
       />
       <el-select
-        v-model="listQuery.importance"
-        :placeholder="'录取情况'"
+        v-model = "listQuery.isChecked"
+        :placeholder = "'录取情况'"
         clearable
-        style="width: 90px"
-        class="filter-item"
+        style = "width: 90px"
+        class = "filter-item"
       >
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
+        <el-option v-for = "item in isCheckedOptions" :key = "item.key" :label = "item.display_name"
+                   :value = "item.key"/>
       </el-select>
       <el-select
-        v-model="listQuery.type"
-        :placeholder="'专业'"
+        v-model = "listQuery.subjectCode"
+        :placeholder = "'专业代码'"
         clearable
-        class="filter-item"
-        style="width: 130px"
+        class = "filter-item"
+        style = "width: 130px"
       >
         <el-option
-          v-for="item in calendarTypeOptions"
-          :key="item.key"
-          :label="item.display_name+'('+item.key+')'"
-          :value="item.key"
+          v-for = "item in subjectCodeOptions"
+          :key = "item.key"
+          :label = "item.display_name+'('+item.key+')'"
+          :value = "item.key"
         />
       </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
+      <el-select v-model = "listQuery.sort" style = "width: 140px" class = "filter-item" @change = "handleFilter">
+        <el-option v-for = "item in sortOptions" :key = "item.key" :label = "item.label" :value = "item.key"/>
       </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      <el-button v-waves class = "filter-item" type = "primary" icon = "el-icon-search" @click = "handleFilter">
         {{ '搜索' }}
       </el-button>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      <el-button v-waves class = "filter-item" type = "primary" icon = "el-icon-search" @click = "handleFilterRefresh">
         <!--todo 没有设置清空表单的方法-->
         {{ '重置条件' }}
       </el-button>
       <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
+        class = "filter-item"
+        style = "margin-left: 10px;"
+        type = "primary"
+        icon = "el-icon-edit"
+        @click = "handleCreate"
+        disabled
       >
         {{ '添加' }}
       </el-button>
       <el-button
         v-waves
-        :loading="downloadLoading"
-        class="filter-item"
-        type="primary"
-        icon="el-icon-download"
-        @click="handleDownload"
+        :loading = "downloadLoading"
+        class = "filter-item"
+        type = "primary"
+        icon = "el-icon-download"
+        @click = "handleDownload"
       >
         {{ '导出' }}
       </el-button>
-      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        {{ '审核人' }}
+      <el-checkbox v-model = "showMoreInfo" class = "filter-item" style = "margin-left:15px;"
+                   @change = "tableKey=tableKey+1">
+        {{ '展示更多' }}
       </el-checkbox>
     </div>
 
     <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
+      :key = "tableKey"
+      v-loading = "listLoading"
+      :data = "list"
       border
       fit
       highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
+      style = "width: 100%;"
+      @sort-change = "sortChange"
     >
       <!--<el-table-column-->
       <!--  :label="$t('table.id')"-->
@@ -94,17 +97,17 @@
       <!--  </template>-->
       <!--</el-table-column>-->
       <el-table-column
-        type="index"
-        label="序号"
-        width="120px"
+        type = "index"
+        label = "序号"
+        width = "120px"
         sortable
-        align="center"
+        align = "center"
       />
-      <el-table-column :label="'考生姓名'" min-width="150px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.studentName }}</span>
+      <el-table-column :label = "'考生姓名'" min-width = "150px">
+        <template slot-scope = "{row}">
+          <span class = "link-type" @click = "handleUpdate(row)">{{ row.studentName }}</span>
           <!--todo 这里放专业-->
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
+          <el-tag>{{ row.studentCode | subjectCodeFilter }}</el-tag>
         </template>
       </el-table-column>
       <!--<el-table-column :label="$t('table.author')" width="110px" align="center">-->
@@ -113,96 +116,119 @@
       <!--  </template>-->
       <!--</el-table-column>-->
       <!--==========================================================================-->
-
       <!--<el-table-column-->
-      <!--  prop="rank"-->
-      <!--  label="初试排名"-->
+      <!--  prop="studentCode"-->
+      <!--  label="考生编号"-->
       <!--  width="180px"-->
-      <!--/>-->
-      <!--<el-table-column-->
-      <!--  prop="studentName"-->
-      <!--  label="考生姓名"-->
-      <!--  width="80px"-->
+      <!--  sortable-->
+      <!--  align="center"-->
       <!--/>-->
       <el-table-column
-        prop="scorePolite"
-        label="政治"
-        width="80px"
+        prop = "scorePolite"
+        label = "政治"
+        width = "80px"
         sortable
-        align="center"
+        align = "center"
       />
       <el-table-column
-        prop="scoreEnglish"
-        label="英语"
-        width="80px"
+        prop = "scoreEnglish"
+        label = "英语"
+        width = "80px"
         sortable
-        align="center"
+        align = "center"
       />
       <el-table-column
-        prop="scoreProfessional1"
-        label="专业课一"
-        width="120px"
+        prop = "scoreProfessional1"
+        label = "专业课一"
+        width = "120px"
         sortable
-        align="center"
+        align = "center"
       />
       <el-table-column
-        prop="scoreProfessional2"
-        label="专业课二"
-        width="120px"
+        prop = "scoreProfessional2"
+        label = "专业课二"
+        width = "120px"
         sortable
-        align="center"
+        align = "center"
       />
       <el-table-column
-        prop="scoreTotal"
-        label="总分"
-        width="80px"
+        prop = "scoreTotal"
+        label = "总分"
+        width = "80px"
         sortable
-        align="center"
+        align = "center"
       />
       <el-table-column
-        prop="rank"
-        label="初试排名"
-        width="120px"
+        prop = "rank"
+        label = "初试排名"
+        width = "120px"
         sortable
-        align="center"
+        align = "center"
       />
-      <el-table-column
-        prop="scoreTotalPublic"
-        label="公共课总分"
-        width="120px"
-        sortable
-        align="center"
-      />
-      <el-table-column
-        prop="scoreTotalProfessional"
-        label="专业课总分"
-        width="120px"
-        sortable
-        align="center"
-      />
-      <el-table-column
-        prop="hgyRank"
-        label="红果研"
-        width="120px"
-        sortable
-        align="center"
-      />
-      <el-table-column
-        prop="kyBoxRank"
-        label="考研盒子"
-        width="120px"
-        sortable
-        align="center"
-      />
-      <!--==========================================================================-->
-      <el-table-column v-if="showReviewer" :label="$t('table.reviewer')" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span style="color:red;">{{ row.reviewer }}</span>
+      <el-table-column v-if = "showMoreInfo" :label = "'公共课总分'" width = "120px" sortable align = "center">
+        <template slot-scope = "{row}">
+          <span style = "color:red;">{{ row.scoreTotalPublic }}</span>
         </template>
       </el-table-column>
-      <!--<el-table-column :label="$t('table.importance')" width="80px">-->
+      <!--<el-table-column-->
+      <!--  prop="scoreTotalPublic"-->
+      <!--  label="公共课总分"-->
+      <!--  width="120px"-->
+      <!--  sortable-->
+      <!--  align="center"-->
+      <!--/>-->
+      <el-table-column v-if = "showMoreInfo" :label = "'专业课总分'" width = "120px" sortable align = "center">
+        <template slot-scope = "{row}">
+          <span style = "color:red;">{{ row.scoreTotalProfessional }}</span>
+        </template>
+      </el-table-column>
+      <!--<el-table-column-->
+      <!--  prop="scoreTotalProfessional"-->
+      <!--  label="专业课总分"-->
+      <!--  width="120px"-->
+      <!--  sortable-->
+      <!--  align="center"-->
+      <!--/>-->
+      <el-table-column
+        prop = "subjectName"
+        label = "专业名称"
+        width = "120px"
+        sortable
+        align = "center"
+      />
+      <el-table-column v-if = "showMoreInfo" :label = "'专业代码'" width = "110px" sortable align = "center">
+        <template slot-scope = "{row}">
+          <span style = "color:red;">{{ row.subjectCode }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column v-if = "showMoreInfo" :label = "'考生编号'" width = "140px" sortable align = "center">
+        <template slot-scope = "{row}">
+          <span style = "color:red;">{{ row.studentCode }}</span>
+        </template>
+      </el-table-column>
+      <!--      <el-table-column-->
+      <!--  prop="subjectCode"-->
+      <!--  label="专业代码"-->
+      <!--  width="120px"-->
+      <!--  sortable-->
+      <!--  align="center"-->
+      <!--/>-->
+      <!--      <el-table-column-->
+      <!--  prop="remark"-->
+      <!--  label="备注"-->
+      <!--  width="120px"-->
+      <!--  sortable-->
+      <!--  align="center"-->
+      <!--/>-->
+      <!--==========================================================================-->
+      <el-table-column v-if = "showMoreInfo" :label = "'显示备注'" width = "110px" align = "center">
+        <template slot-scope = "{row}">
+          <span style = "color:red;">{{ row.remark }}</span>
+        </template>
+      </el-table-column>
+      <!--<el-table-column :label="$t('table.isChecked')" width="80px">-->
       <!--  <template slot-scope="{row}">-->
-      <!--    <svg-icon v-for="n in +row.importance" :key="n" icon-class="star" class="meta-item__icon" />-->
+      <!--    <svg-icon v-for="n in +row.isChecked" :key="n" icon-class="star" class="meta-item__icon" />-->
       <!--  </template>-->
       <!--</el-table-column>-->
       <!--<el-table-column :label="$t('table.readings')" align="center" width="95">-->
@@ -218,9 +244,10 @@
       <!--    </el-tag>-->
       <!--  </template>-->
       <!--</el-table-column>-->
-      <el-table-column :label="$t('table.actions')" align="center" width="280px" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+      <el-table-column :label = "$t('table.actions')" align = "center" width = "280px"
+                       class-name = "small-padding fixed-width">
+        <template slot-scope = "{row,$index}">
+          <el-button type = "primary" size = "mini" @click = "handleUpdate(row)">
             {{ $t('table.edit') }}
           </el-button>
           <!--<el-button-->
@@ -234,10 +261,10 @@
           <!--<el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">-->
           <!--  {{ $t('table.draft') }}-->
           <!--</el-button>-->
-          <el-button v-if="row.status!='deleted'" size="mini" type="default" @click="handleDelete(row,$index)">
+          <el-button v-if = "row.status!='deleted'" size = "mini" type = "default" @click = "handleHide(row,$index)">
             {{ '隐藏' }}
           </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
+          <el-button v-if = "row.status!='deleted'" size = "mini" type = "danger" @click = "handleDelete(row,$index)">
             {{ '删除' }}
           </el-button>
         </template>
@@ -246,118 +273,122 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
-      @pagination="getList"
+      v-show = "total>0"
+      :total = "total"
+      :page.sync = "listQuery.page"
+      :limit.sync = "listQuery.limit"
+      @pagination = "getList"
     />
     <!--新增和编辑的弹窗-->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title = "textMap[dialogStatus]" :visible.sync = "dialogFormVisible">
       <el-form
-        ref="dataForm"
-        :rules="rules"
-        :model="temp"
-        label-position="left"
-        label-width="70px"
-        style="width: 400px; margin-left:50px;"
+        ref = "dataForm"
+        :rules = "rules"
+        :model = "temp"
+        label-position = "left"
+        label-width = "140px"
+        style = "width: 400px; margin-left:50px;"
       >
-        <el-form-item :label="$t('table.type')" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option
-              v-for="item in calendarTypeOptions"
-              :key="item.key"
-              :label="item.display_name"
-              :value="item.key"
-            />
-          </el-select>
+        <!--<div slot="header" class="header clearfix">-->
+        <!--    <span>review_list</span>-->
+        <!--    <el-button v-if="!ischeck && !isFind" class="fr" type="primary" @click="validate('ruleForm')">提交</el-button>-->
+        <!--    <el-button v-else class="fr" type="primary" @click="goBack">返回</el-button>-->
+        <!--</div>-->
+        <el-form-item label = "复试线主键" prop = "id">
+          <el-input placeholder = "请输入复试线主键" v-model = "temp.id" :disabled = "true"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('table.date')" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
+        <el-form-item label = "初试排名" prop = "rank">
+          <el-input placeholder = "请输入初试排名" v-model = "temp.rank" :disabled = "true"></el-input>
         </el-form-item>
-        <el-form-item :label="'考生姓名'" prop="studentName">
-          <el-input v-model="temp.studentName" />
+        <el-form-item label = "学生姓名" prop = "studentName">
+          <el-input placeholder = "请输入学生姓名" v-model = "temp.studentName" :disabled = "true"></el-input>
         </el-form-item>
-        <el-form-item :label="'政治'" prop="scorePolite">
-          <el-input v-model="temp.scorePolite" />
+        <el-form-item label = "学生编号" prop = "studentCode">
+          <el-input placeholder = "请输入学生编号" v-model = "temp.studentCode" :disabled = "true"></el-input>
         </el-form-item>
-        <el-form-item :label="'英语'" prop="scoreEnglish">
-          <el-input v-model="temp.scoreEnglish" />
+        <el-form-item label = "学科代码" prop = "subjectCode">
+          <el-input placeholder = "请输入学科代码" v-model = "temp.subjectCode" :disabled = "true"></el-input>
         </el-form-item>
-        <el-form-item :label="'专业课一'" prop="scoreProfessional1">
-          <el-input v-model="temp.scoreProfessional1" />
+        <el-form-item label = "学科名称" prop = "subjectName">
+          <el-input placeholder = "请输入学科名称" v-model = "temp.subjectName" :disabled = "true"></el-input>
         </el-form-item>
-        <el-form-item :label="'专业课二'" prop="scoreProfessional2">
-          <el-input v-model="temp.scoreProfessional2" />
+        <el-form-item label = "政治" prop = "scorePolite">
+          <el-input placeholder = "请输入政治" v-model = "temp.scorePolite"></el-input>
         </el-form-item>
-        <!--todo 后台要自动计算总分-->
-        <el-form-item :label="$t('table.status')">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
+        <el-form-item label = "英语" prop = "scoreEnglish">
+          <el-input placeholder = "请输入英语" v-model = "temp.scoreEnglish"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('table.importance')">
-          <el-rate
-            v-model="temp.importance"
-            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-            :max="3"
-            style="margin-top:8px;"
-          />
+        <el-form-item label = "专业课一" prop = "scoreProfessional1">
+          <el-input placeholder = "请输入专业课一" v-model = "temp.scoreProfessional1"></el-input>
         </el-form-item>
-        <el-form-item :label="$t('table.remark')">
-          <el-input
-            v-model="temp.remark"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            type="textarea"
-            placeholder="Please input"
-          />
+        <el-form-item label = "专业课二" prop = "scoreProfessional2">
+          <el-input placeholder = "请输入专业课二" v-model = "temp.scoreProfessional2"></el-input>
+        </el-form-item>
+        <el-form-item label = "初试总分" prop = "scoreTotal">
+          <el-input placeholder = "请输入初试总分" v-model = "temp.scoreTotal" :disabled = "true"></el-input>
+        </el-form-item>
+        <el-form-item label = "初试公共课总分" prop = "scoreTotalPublic">
+          <el-input placeholder = "请输入初试公共课总分" v-model = "temp.scoreTotalPublic"
+                    :disabled = "true"></el-input>
+        </el-form-item>
+        <el-form-item label = "初试专业课总分" prop = "scoreTotalProfessional">
+          <el-input placeholder = "请输入初试专业课总分" v-model = "temp.scoreTotalProfessional"
+                    :disabled = "true"></el-input>
+        </el-form-item>
+        <el-form-item label = "备注" prop = "remark">
+          <el-input placeholder = "请输入备注" v-model = "temp.remark"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
+      <div slot = "footer" class = "dialog-footer">
+        <el-button @click = "dialogFormVisible = false">
           {{ $t('table.cancel') }}
         </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+        <el-button type = "primary" @click = "dialogStatus==='create'?createData():updateData()">
           {{ $t('table.confirm') }}
         </el-button>
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
+    <el-dialog :visible.sync = "dialogPvVisible" title = "Reading statistics">
+      <el-table :data = "pvData" border fit highlight-current-row style = "width: 100%">
+        <el-table-column prop = "key" label = "Channel"/>
+        <el-table-column prop = "pv" label = "Pv"/>
       </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
+      <span slot = "footer" class = "dialog-footer">
+        <el-button type = "primary" @click = "dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchMergeDatabaseList,  createArticle, updateArticle } from '@/api/article'
+import {fetchReviewListMarxism, insertOrUpdateReviewListMarxism} from '@/api/examination'
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
+import {parseTime} from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
+// 专业代码
+const subjectCodeOptions = [
+  {key: '030500', display_name: '马克思主义理论'},
+  {key: '071200', display_name: '科学技术史'},
+  {key: '010108', display_name: '科学技术哲学'}
+]
+const isCheckedOptions = [
+  {key: '0', display_name: '录取'},
+  {key: '1', display_name: '落榜'}
 ]
 
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
+// arr to obj, such as { 030500 : "马克思主义理论", 071200 : "科学技术史" }
+const subjectCodeKeyValue = subjectCodeOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
   return acc
 }, {})
 
+const excelName = '马克思主义理论复试名单'
+
 export default {
-  name: 'ComplexTable',
-  components: { Pagination },
-  directives: { waves },
+  name: 'QueryMaxismReviewListTable',
+  components: {Pagination},
+  directives: {waves},
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -367,8 +398,8 @@ export default {
       }
       return statusMap[status]
     },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
+    subjectCodeFilter(type) {
+      return subjectCodeKeyValue[type]
     }
   },
   data() {
@@ -380,24 +411,36 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        importance: undefined,
+        subjectCode: '030500',
+        isChecked: undefined,
         studentName: undefined,
         type: undefined,
-        sort: '+id'
+        sort: '0'
       },
-      importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
+      isCheckedOptions,
+      subjectCodeOptions,
+      sortOptions: [{label: '高分优先', key: '0'}, {label: '低分优先', key: '1'}],
       statusOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
+      showMoreInfo: false,
       temp: {
         id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
+        rank: undefined,
         studentName: '',
-        type: '',
-        status: 'published'
+        studentCode: '',
+        subjectCode: 1,
+        subjectName: '',
+        scorePolite: '',
+        scoreEnglish: '',
+        scoreProfessional1: '',
+        scoreProfessional2: '',
+        scoreTotal: '',
+        scoreTotalPublic: '',
+        scoreTotalProfessional: '',
+        remark: '',
+        // isChecked: 1,
+        // timestamp: new Date(),
+        // type: '',
+        // status: 'published'
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -408,9 +451,9 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        studentName: [{ required: true, message: 'studentName is required', trigger: 'blur' }]
+        type: [{required: true, message: 'type is required', trigger: 'change'}],
+        timestamp: [{type: 'date', required: true, message: 'timestamp is required', trigger: 'change'}],
+        studentName: [{required: true, message: 'studentName is required', trigger: 'blur'}]
       },
       downloadLoading: false
     }
@@ -421,7 +464,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchMergeDatabaseList(this.listQuery).then(response => {
+      fetchReviewListMarxism(this.listQuery).then(response => {
         this.list = response.data.records
         this.total = response.data.total
 
@@ -432,7 +475,13 @@ export default {
       })
     },
     handleFilter() {
+      // todo 这里如果没有条件，就默认查询马院的三个代码
       this.listQuery.page = 1
+      this.getList()
+    },
+    handleFilterRefresh() {
+      this.listQuery.page = 1
+      this.listQuery.studentName = ''
       this.getList()
     },
     // handleModifyStatus(row, status) {
@@ -443,7 +492,7 @@ export default {
     //   row.status = status
     // },
     sortChange(data) {
-      const { prop, order } = data
+      const {prop, order} = data
       if (prop === 'id') {
         this.sortByID(order)
       }
@@ -459,9 +508,9 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        importance: 1,
+        isChecked: 1,
         remark: '',
-        timestamp: new Date(),
+        // timestamp: new Date(),
         studentName: '',
         status: 'published',
         type: ''
@@ -480,7 +529,7 @@ export default {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
           this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
+          insertOrUpdateReviewListMarxism(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -495,7 +544,7 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
+      // this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -506,10 +555,11 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
+          // console.log("我是数据："+JSON.stringify(tempData))
+          // tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          insertOrUpdateReviewListMarxism(tempData).then(() => {
+            // const index = this.list.findIndex(v => v.id === this.temp.id)
+            // this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -521,10 +571,18 @@ export default {
         }
       })
     },
-    handleDelete(row, index) {
+    handleHide(row, index) {
       this.$notify({
-        title: '成功',
-        message: '删除成功',
+        title: '隐藏成功',
+        message: '刷新后再次出现',
+        type: 'success',
+        duration: 2000
+      })
+      this.list.splice(index, 1)
+    }, handleDelete(row, index) {
+      this.$notify({
+        title: '删除成功',
+        message: '永久删除',
         type: 'success',
         duration: 2000
       })
@@ -539,13 +597,15 @@ export default {
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'studentName', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'studentName', 'type', 'importance', 'status']
+        // 设置文件头
+        const tHeader = ['id', '初试排名', '学生姓名', '学生编号', '学科名称', '政治', '英语', '专业课一', '专业课二', '初试总分', '初试公共课总分', '初试专业课总分', '备注']
+        // 设置文件需要的展示列
+        const filterVal = ['id', 'rank', 'studentName', 'studentCode', 'subjectName', 'scorePolite', 'scoreEnglish', 'scoreProfessional1', 'scoreProfessional2', 'scoreTotal', 'scoreTotalPublic', 'scoreTotalProfessional', 'remark']
         const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: 'table-list'
+          filename: excelName
         })
         this.downloadLoading = false
       })
@@ -559,10 +619,10 @@ export default {
         }
       }))
     },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
-    }
+    // getSortClass: function (key) {
+    //   const sort = this.listQuery.sort
+    //   return sort === `+${key}` ? 'ascending' : 'descending'
+    // }
   }
 }
 </script>
