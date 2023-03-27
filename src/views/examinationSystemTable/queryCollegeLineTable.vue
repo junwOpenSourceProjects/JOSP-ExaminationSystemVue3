@@ -205,35 +205,35 @@
         label-width = "140px"
         style = "width: 400px; margin-left:50px;"
       >
-        <el-form-item label = "院线主键 primary key" prop = "id">
-          <el-input placeholder = "请输入院线主键 primary key" v-model = "temp.id"></el-input>
+        <el-form-item label = "院线主键" prop = "id">
+          <el-input placeholder = "请输入院线主键 primary key" v-model = "temp.id" disabled></el-input>
         </el-form-item>
         <el-form-item label = "学科类型" prop = "subjectClass">
-          <el-input placeholder = "请输入学科类型" v-model = "temp.subjectClass"></el-input>
+          <el-input placeholder = "请输入学科类型" v-model = "temp.subjectClass" disabled></el-input>
         </el-form-item>
         <el-form-item label = "学硕专硕" prop = "degreeType">
-          <el-input placeholder = "请输入学硕专硕" v-model = "temp.degreeType"></el-input>
+          <el-input placeholder = "请输入学硕专硕" v-model = "temp.degreeType" disabled></el-input>
         </el-form-item>
         <el-form-item label = "政治校线" prop = "scorePolite">
-          <el-input placeholder = "请输入政治校线" v-model = "temp.scorePolite"></el-input>
+          <el-input placeholder = "请输入政治校线" v-model = "temp.scorePolite" disabled></el-input>
         </el-form-item>
         <el-form-item label = "英语校线" prop = "scoreEnglish">
-          <el-input placeholder = "请输入英语校线" v-model = "temp.scoreEnglish"></el-input>
+          <el-input placeholder = "请输入英语校线" v-model = "temp.scoreEnglish" disabled></el-input>
         </el-form-item>
         <el-form-item label = "专业课一校线" prop = "scoreProfessional1">
-          <el-input placeholder = "请输入专业课一校线" v-model = "temp.scoreProfessional1"></el-input>
+          <el-input placeholder = "请输入专业课一校线" v-model = "temp.scoreProfessional1" disabled></el-input>
         </el-form-item>
         <el-form-item label = "专业课二校线" prop = "scoreProfessional2">
-          <el-input placeholder = "请输入专业课二校线" v-model = "temp.scoreProfessional2"></el-input>
+          <el-input placeholder = "请输入专业课二校线" v-model = "temp.scoreProfessional2" disabled></el-input>
         </el-form-item>
         <el-form-item label = "总分校线" prop = "scoreTotal">
-          <el-input placeholder = "请输入总分校线" v-model = "temp.scoreTotal"></el-input>
+          <el-input placeholder = "请输入总分校线" v-model = "temp.scoreTotal" disabled></el-input>
         </el-form-item>
         <el-form-item label = "公共课总分校线" prop = "scoreTotalPublic">
-          <el-input placeholder = "请输入公共课总分校线" v-model = "temp.scoreTotalPublic"></el-input>
+          <el-input placeholder = "请输入公共课总分校线" v-model = "temp.scoreTotalPublic" disabled></el-input>
         </el-form-item>
         <el-form-item label = "专业课总分校线" prop = "scoreTotalProfessional">
-          <el-input placeholder = "请输入专业课总分校线" v-model = "temp.scoreTotalProfessional"></el-input>
+          <el-input placeholder = "请输入专业课总分校线" v-model = "temp.scoreTotalProfessional" disabled></el-input>
         </el-form-item>
       </el-form>
       <div slot = "footer" class = "dialog-footer">
@@ -331,9 +331,6 @@ export default {
         scoreTotal: '',
         scoreTotalPublic: '',
         scoreTotalProfessional: '',
-        subjectName: '',
-        degreeType: '',
-        subjectCode: 1,
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -474,9 +471,9 @@ export default {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
         // 设置文件头
-        const tHeader = ['id', '学科类型', '学生姓名', '学生编号', '学科名称', '政治', '英语', '专业课一', '专业课二', '初试总分', '初试公共课总分', '初试专业课总分', '备注']
+        const tHeader = ['院线主键', '学科类型', '学硕专硕', '政治校线', '英语校线', '专业课一校线', '专业课二校线', '总分校线', '公共课总分校线', '专业课总分校线']
         // 设置文件需要的展示列
-        const filterVal = ['id', 'rank', 'studentName', 'studentCode', 'subjectName', 'scorePolite', 'scoreEnglish', 'scoreProfessional1', 'scoreProfessional2', 'scoreTotal', 'scoreTotalPublic', 'scoreTotalProfessional', 'remark']
+        const filterVal = ['id', 'subjectClass', 'studentClass', 'scorePolite', 'scoreEnglish', 'scoreProfessional1', 'scoreProfessional2', 'scoreTotal', 'scoreTotalPublic', 'scoreTotalProfessional']
         const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,

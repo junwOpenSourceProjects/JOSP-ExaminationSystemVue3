@@ -23,6 +23,7 @@
         class = "filter-item"
         type = "primary"
         icon = "el-icon-download"
+        disabled
         @click = "handleDownload"
       >
         {{ '导出' }}

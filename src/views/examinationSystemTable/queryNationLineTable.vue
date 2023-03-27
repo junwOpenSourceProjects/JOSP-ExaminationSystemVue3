@@ -484,9 +484,9 @@ export default {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
         // 设置文件头
-        const tHeader = ['id', '学科类型', '学生姓名', '学生编号', '学科名称', '政治', '英语', '专业课一', '专业课二', '初试总分', '初试公共课总分', '初试专业课总分', '备注']
+        const tHeader = ['国家线主键', '学科类型', 'AB类学生', '政治国家线', '英语国家线', '专业课一国家线', '专业课二国家线', '总分国家线', '公共课总分国家线', '专业课总分国家线', '学硕专硕', '学科大类']
         // 设置文件需要的展示列
-        const filterVal = ['id', 'rank', 'studentName', 'studentCode', 'subjectName', 'scorePolite', 'scoreEnglish', 'scoreProfessional1', 'scoreProfessional2', 'scoreTotal', 'scoreTotalPublic', 'scoreTotalProfessional', 'remark']
+        const filterVal = ['id', 'subjectClass', 'studentClass', 'scorePolite', 'scoreEnglish', 'scoreProfessional1', 'scoreProfessional2', 'scoreTotal', 'scoreTotalPublic', 'scoreTotalProfessional', 'degreeType', 'subjectCode']
         const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,

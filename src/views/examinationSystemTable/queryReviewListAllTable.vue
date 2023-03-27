@@ -4,7 +4,7 @@
       <el-input
         v-model = "listQuery.studentName"
         :placeholder = "'姓名'"
-        style = "width: 200px;"
+        style = "width: 300px;"
         class = "filter-item"
         clearable
         @keyup.enter.native = "handleFilter"
@@ -13,24 +13,24 @@
         v-model = "listQuery.isChecked"
         :placeholder = "'录取情况'"
         clearable
-        style = "width: 90px"
+        style = "width: 80px"
         class = "filter-item"
       >
         <el-option v-for = "item in isCheckedOptions" :key = "item.key" :label = "item.display_name"
                    :value = "item.key"/>
       </el-select>
-      <!--todo 查询学院的名称，回调回来-->
       <el-select
-        v-model = "listQuery.subjectCode"
+        v-model = "listQuery.academySearchInput"
         :placeholder = "'学院名称'"
         clearable
+        filterable
         class = "filter-item"
-        style = "width: 130px"
+        style = "width: 200px"
       >
         <el-option
-          v-for = "item in subjectCodeOptions"
+          v-for = "item in academyList"
           :key = "item.key"
-          :label = "item.display_name+'('+item.key+')'"
+          :label = "'('+item.key+')'+item.label"
           :value = "item.key"
         />
       </el-select>
@@ -40,7 +40,7 @@
         :placeholder = "'专业代码'"
         clearable
         class = "filter-item"
-        style = "width: 130px"
+        style = "width: 200px"
       >
         <el-option
           v-for = "item in subjectCodeOptions"
@@ -56,7 +56,6 @@
         {{ '搜索' }}
       </el-button>
       <el-button v-waves class = "filter-item" type = "primary" icon = "el-icon-search" @click = "handleFilterRefresh">
-        <!--todo 没有设置清空表单的方法-->
         {{ '重置条件' }}
       </el-button>
       <el-button
@@ -194,7 +193,7 @@
           <el-button v-if = "row.status!='deleted'" size = "mini" type = "default" @click = "handleHide(row,$index)">
             {{ '隐藏' }}
           </el-button>
-          <el-button v-if = "row.status!='deleted'" size = "mini" type = "danger" @click = "handleDelete(row,$index)">
+          <el-button v-if = "row.status!='deleted'" size = "mini" type = "danger" @click = "handleDelete(row,$index)" disabled>
             {{ '删除' }}
           </el-button>
         </template>
@@ -287,10 +286,11 @@
 </template>
 
 <script>
-import {fetchReviewListAll, insertOrUpdateReviewListAll} from '@/api/examination'
+import {fetchAcademyList, fetchReviewListAll, insertOrUpdateReviewListAll} from '@/api/examination'
 import waves from '@/directive/waves' // waves directive
 import {parseTime} from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
+// secondary package based on el-pagination
 // 专业代码
 const subjectCodeOptions = [
   {key: '030500', display_name: '马克思主义理论'},
@@ -340,11 +340,13 @@ export default {
         isChecked: undefined,
         studentName: undefined,
         type: undefined,
+        academySearchInput: '',
         sort: '0'
       },
       isCheckedOptions,
       subjectCodeOptions,
       sortOptions: [{label: '高分优先', key: '0'}, {label: '低分优先', key: '1'}],
+      academyList: [{label: '学院1', key: '0'}, {label: '学院2', key: '1'}],
       statusOptions: ['published', 'draft', 'deleted'],
       showMoreInfo: false,
       temp: {
@@ -381,8 +383,18 @@ export default {
   },
   created() {
     this.getList()
+    this.remoteMethod()
   },
   methods: {
+    // 学院框进行搜索
+    remoteMethod() {
+      this.listLoading = true;
+      fetchAcademyList().then(response => {
+        this.academyList = response.data
+      }).then(() => {
+        this.listLoading = false;
+      })
+    },
     getList() {
       this.listLoading = true
       fetchReviewListAll(this.listQuery).then(response => {
@@ -394,23 +406,27 @@ export default {
           this.listLoading = false
         }, 1.5 * 1000)
       })
-    },
+    }
+    ,
     handleFilter() {
       // todo 先查学院，再查专业
       this.listQuery.page = 1
       this.getList()
-    },
+    }
+    ,
     handleFilterRefresh() {
       this.listQuery.page = 1
       this.listQuery.studentName = ''
       this.getList()
-    },
+    }
+    ,
     sortChange(data) {
       const {prop, order} = data
       if (prop === 'id') {
         this.sortByID(order)
       }
-    },
+    }
+    ,
     sortByID(order) {
       if (order === 'ascending') {
         this.listQuery.sort = '+id'
@@ -418,7 +434,8 @@ export default {
         this.listQuery.sort = '-id'
       }
       this.handleFilter()
-    },
+    }
+    ,
     resetTemp() {
       this.temp = {
         id: undefined,
@@ -436,7 +453,8 @@ export default {
         scoreTotalProfessional: '',
         remark: '',
       }
-    },
+    }
+    ,
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
@@ -444,7 +462,8 @@ export default {
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
-    },
+    }
+    ,
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
@@ -460,7 +479,8 @@ export default {
           })
         }
       })
-    },
+    }
+    ,
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
@@ -468,7 +488,8 @@ export default {
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
-    },
+    }
+    ,
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
@@ -484,7 +505,8 @@ export default {
           })
         }
       })
-    },
+    }
+    ,
     handleHide(row, index) {
       this.$notify({
         title: '隐藏成功',
@@ -493,7 +515,9 @@ export default {
         duration: 2000
       })
       this.list.splice(index, 1)
-    }, handleDelete(row, index) {
+    }
+    ,
+    handleDelete(row, index) {
       this.$notify({
         title: '暂无删除',
         message: '暂无删除',
@@ -501,7 +525,8 @@ export default {
         duration: 2000
       })
       this.list.splice(index, 1)
-    },
+    }
+    ,
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
@@ -517,7 +542,8 @@ export default {
         })
         this.downloadLoading = false
       })
-    },
+    }
+    ,
     formatJson(filterVal) {
       return this.list.map(v => filterVal.map(j => {
         if (j === 'timestamp') {
@@ -526,7 +552,8 @@ export default {
           return v[j]
         }
       }))
-    },
+    }
+    ,
   }
 }
 </script>

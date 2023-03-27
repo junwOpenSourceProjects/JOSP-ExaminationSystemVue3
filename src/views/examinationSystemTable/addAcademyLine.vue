@@ -1,63 +1,6 @@
 <template>
   <div class = "app-container">
     <div class = "filter-container">
-      <el-input
-        v-model = "listQuery.studentName"
-        :placeholder = "'学院名称'"
-        style = "width: 200px;"
-        class = "filter-item"
-        clearable
-        @keyup.enter.native = "handleFilter"
-      />
-      <el-select
-        v-model = "listQuery.isChecked"
-        :placeholder = "'录取情况'"
-        clearable
-        style = "width: 90px"
-        class = "filter-item"
-      >
-        <el-option v-for = "item in isCheckedOptions" :key = "item.key" :label = "item.display_name"
-                   :value = "item.key"/>
-      </el-select>
-      <el-select
-        v-model = "listQuery.academySearchInput"
-        :placeholder = "'学院名称'"
-        clearable
-        filterable
-        class = "filter-item"
-        style = "width: 200px"
-      >
-        <el-option
-          v-for = "item in academyList"
-          :key = "item.key"
-          :label = "'('+item.key+')'+item.label"
-          :value = "item.key"
-        />
-      </el-select>
-      <!--todo 根据学院的名称，查询出专业代码-->
-      <el-select
-        v-model = "listQuery.subjectCode"
-        :placeholder = "'专业代码'"
-        clearable
-        class = "filter-item"
-        style = "width: 200px"
-      >
-        <el-option
-          v-for = "item in subjectCodeOptions"
-          :key = "item.key"
-          :label = "item.display_name+'('+item.key+')'"
-          :value = "item.key"
-        />
-      </el-select>
-      <el-select v-model = "listQuery.sort" style = "width: 140px" class = "filter-item" @change = "handleFilter">
-        <el-option v-for = "item in sortOptions" :key = "item.key" :label = "item.label" :value = "item.key"/>
-      </el-select>
-      <el-button v-waves class = "filter-item" type = "primary" icon = "el-icon-search" @click = "handleFilter">
-        {{ '搜索' }}
-      </el-button>
-      <el-button v-waves class = "filter-item" type = "primary" icon = "el-icon-search" @click = "handleFilterRefresh">
-        {{ '重置条件' }}
-      </el-button>
       <el-button
         class = "filter-item"
         style = "margin-left: 10px;"
@@ -67,201 +10,25 @@
       >
         {{ '添加' }}
       </el-button>
-      <el-button
-        v-waves
-        :loading = "downloadLoading"
-        class = "filter-item"
-        type = "primary"
-        icon = "el-icon-download"
-        @click = "handleDownload"
-      >
-        {{ '导出' }}
-      </el-button>
-      <el-checkbox v-model = "showMoreInfo" class = "filter-item" style = "margin-left:15px;"
-                   @change = "tableKey=tableKey+1">
-        {{ '展示更多' }}
-      </el-checkbox>
     </div>
-
-    <el-table
-      :key = "tableKey"
-      v-loading = "listLoading"
-      :data = "list"
-      border
-      fit
-      highlight-current-row
-      style = "width: 100%;"
-      @sort-change = "sortChange"
-    >
-      <el-table-column
-        type = "index"
-        label = "序号"
-        width = "120px"
-        sortable
-        align = "center"
-      />
-      <!--<el-table-column :label = "'考生姓名'" min-width = "150px">-->
-      <!--  <template slot-scope = "{row}">-->
-      <!--    <span class = "link-type" @click = "handleUpdate(row)">{{ row.studentName }}</span>-->
-      <!--    &lt;!&ndash;todo 这里放专业&ndash;&gt;-->
-      <!--    <el-tag>{{ row.studentCode | subjectCodeFilter }}</el-tag>-->
-      <!--  </template>-->
-      <!--</el-table-column>-->
-      <!--==========================================================================-->
-      <el-table-column
-        prop = "academyName"
-        label = "学院名称"
-        width = "120px"
-        sortable
-        align = "center"
-      />
-      <el-table-column
-        prop = "professionCode"
-        label = "专业代码"
-        width = "80px"
-        sortable
-        align = "center"
-      />
-      <el-table-column
-        prop = "professionName"
-        label = "专业名称"
-        width = "80px"
-        sortable
-        align = "center"
-      />
-      <el-table-column v-if = "showMoreInfo" :label = "'考试方式'" width = "120px" sortable align = "center">
-        <template slot-scope = "{row}">
-          <span style = "color:red;">{{ row.testWay }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop = "scorePolite"
-        label = "政治"
-        width = "80px"
-        sortable
-        align = "center"
-      />
-      <el-table-column
-        prop = "scoreEnglish"
-        label = "英语"
-        width = "80px"
-        sortable
-        align = "center"
-      />
-      <el-table-column
-        prop = "scoreProfessional1"
-        label = "专业课一"
-        width = "120px"
-        sortable
-        align = "center"
-      />
-      <el-table-column
-        prop = "scoreProfessional2"
-        label = "专业课二"
-        width = "120px"
-        sortable
-        align = "center"
-      />
-      <el-table-column
-        prop = "scoreTotal"
-        label = "总分"
-        width = "80px"
-        sortable
-        align = "center"
-      />
-      <el-table-column v-if = "showMoreInfo" :label = "'公共课总分'" width = "120px" sortable align = "center">
-        <template slot-scope = "{row}">
-          <span style = "color:red;">{{ row.scoreTotalPublic }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if = "showMoreInfo" :label = "'专业课总分'" width = "120px" sortable align = "center">
-        <template slot-scope = "{row}">
-          <span style = "color:red;">{{ row.scoreTotalProfessional }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop = "trainingMode"
-        label = "培养方式"
-        width = "120px"
-        sortable
-        align = "center"
-      />
-      <el-table-column
-        prop = "degreeType"
-        label = "学位类型"
-        width = "120px"
-        sortable
-        align = "center"
-      />
-      <el-table-column
-        prop = "researchDirection"
-        label = "研究方向"
-        width = "120px"
-        sortable
-        align = "center"
-      />
-      <el-table-column
-        prop = "numberOfStudentsExempted"
-        label = "免试人数"
-        width = "120px"
-        sortable
-        align = "center"
-      />
-      <el-table-column
-        prop = "numberOfStudentsEnrolledInTheUnifiedExamination"
-        label = "统考报名人数"
-        width = "120px"
-        sortable
-        align = "center"
-      />
-      <!--==========================================================================-->
-      <el-table-column v-if = "showMoreInfo" :label = "'显示备注'" width = "110px" align = "center">
-        <template slot-scope = "{row}">
-          <span style = "color:red;">{{ row.remark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label = "$t('table.actions')" align = "center" width = "280px"
-                       class-name = "small-padding fixed-width" fixed="right">
-        <template slot-scope = "{row,$index}">
-          <el-button type = "primary" size = "mini" @click = "handleUpdate(row)">
-            {{ $t('table.edit') }}
+    <el-form ref = "dataForm"
+             :rules = "rules"
+             :model = "temp"
+             label-position = "left"
+             label-width = "140px"
+             style = "width: 500px; margin-left:50px;">
+      <el-card class = "box-card">
+        <div slot = "header" class = "header clearfix">
+          <span>academy_line</span>
+          <el-button @click = "dialogFormVisible = false">
+            {{ '取消' }}
           </el-button>
-          <el-button v-if = "row.status!='deleted'" size = "mini" type = "default" @click = "handleHide(row,$index)">
-            {{ '隐藏' }}
+          <el-button type = "primary" @click = "dialogStatus==='create'?createData():updateData()">
+            {{ '新增' }}
           </el-button>
-          <el-button v-if = "row.status!='deleted'" size = "mini" type = "danger" @click = "handleDelete(row,$index)"
-                     disabled>
-            {{ '删除' }}
-          </el-button>
-        </template>
-      </el-table-column>
-
-    </el-table>
-
-    <pagination
-      v-show = "total>0"
-      :total = "total"
-      :page.sync = "listQuery.page"
-      :limit.sync = "listQuery.limit"
-      @pagination = "getList"
-    />
-    <!--新增和编辑的弹窗-->
-    <el-dialog :title = "textMap[dialogStatus]" :visible.sync = "dialogFormVisible">
-      <el-form
-        ref = "dataForm"
-        :rules = "rules"
-        :model = "temp"
-        label-position = "left"
-        label-width = "140px"
-        style = "width: 500px; margin-left:50px;"
-      >
-        <!--todo 设置校验规则-->
-        <!--成绩必须是数字，1-4必填-->
-        <!--培养方式必填，学位必填，学院名称，专业必填，考试方式必填-->
-        <!--专业代码必填-->
-
-        <el-form-item label = "院线主键" prop = "id">
-          <el-input placeholder = "请输入院线主键     primary key" v-model = "temp.id" disabled></el-input>
+        </div>
+        <el-form-item label = "院线主键     primary key" prop = "id">
+          <el-input placeholder = "请输入院线主键     primary key" v-model = "temp.id"></el-input>
         </el-form-item>
         <el-form-item label = "专业代码" prop = "professionCode">
           <el-input placeholder = "请输入专业代码" v-model = "temp.professionCode"></el-input>
@@ -285,13 +52,13 @@
           <el-input placeholder = "请输入专业课二" v-model = "temp.scoreProfessional2"></el-input>
         </el-form-item>
         <el-form-item label = "复试线总分" prop = "scoreTotal">
-          <el-input placeholder = "请输入复试线总分" v-model = "temp.scoreTotal" disabled></el-input>
+          <el-input placeholder = "请输入复试线总分" v-model = "temp.scoreTotal"></el-input>
         </el-form-item>
         <el-form-item label = "公共课总分院线" prop = "scoreTotalPublic">
-          <el-input placeholder = "请输入公共课总分院线" v-model = "temp.scoreTotalPublic" disabled></el-input>
+          <el-input placeholder = "请输入公共课总分院线" v-model = "temp.scoreTotalPublic"></el-input>
         </el-form-item>
         <el-form-item label = "专业课总分院线" prop = "scoreTotalProfessional">
-          <el-input placeholder = "请输入专业课总分院线" v-model = "temp.scoreTotalProfessional" disabled></el-input>
+          <el-input placeholder = "请输入专业课总分院线" v-model = "temp.scoreTotalProfessional"></el-input>
         </el-form-item>
         <el-form-item label = "培养方式" prop = "trainingMode">
           <!--<el-input placeholder = "请输入培养方式" v-model = "temp.trainingMode"></el-input>-->
@@ -334,15 +101,17 @@
             />
           </el-select>
         </el-form-item>
-      </el-form>
-      <div slot = "footer" class = "dialog-footer">
-        <el-button @click = "dialogFormVisible = false">
-          {{ $t('table.cancel') }}
-        </el-button>
-        <el-button type = "primary" @click = "dialogStatus==='create'?createData():updateData()">
-          {{ $t('table.confirm') }}
-        </el-button>
-      </div>
+      </el-card>
+    </el-form>
+    <pagination
+      v-show = "total>0"
+      :total = "total"
+      :page.sync = "listQuery.page"
+      :limit.sync = "listQuery.limit"
+      @pagination = "getList"
+    />
+    <!--新增和编辑的弹窗-->
+    <el-dialog :title = "textMap[dialogStatus]" :visible.sync = "dialogFormVisible">
     </el-dialog>
 
     <el-dialog :visible.sync = "dialogPvVisible" title = "Reading statistics">
@@ -382,7 +151,7 @@ const subjectCodeKeyValue = subjectCodeOptions.reduce((acc, cur) => {
 const excelName = '查询院线'
 
 export default {
-  name: 'QueryAcademyLineTable',
+  name: 'addAcademyLine',
   components: {Pagination},
   directives: {waves},
   filters: {

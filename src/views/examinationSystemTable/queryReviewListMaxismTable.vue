@@ -184,7 +184,8 @@
           <el-button v-if = "row.status!='deleted'" size = "mini" type = "default" @click = "handleHide(row,$index)">
             {{ '隐藏' }}
           </el-button>
-          <el-button v-if = "row.status!='deleted'" size = "mini" type = "danger" @click = "handleDelete(row,$index)" disabled>
+          <el-button v-if = "row.status!='deleted'" size = "mini" type = "danger" @click = "handleDelete(row,$index)"
+                     disabled>
             {{ '删除' }}
           </el-button>
         </template>
@@ -333,7 +334,10 @@ export default {
       },
       isCheckedOptions,
       subjectCodeOptions,
-      sortOptions: [{label: '高分优先', key: '0'}, {label: '低分优先', key: '1'}],
+      sortOptions: [{label: '总分降序', key: '0'}, {label: '总分升序', key: '1'}, {
+        label: '公共分降序',
+        key: '2'
+      }, {label: '专业分降序', key: '3'}],
       statusOptions: ['published', 'draft', 'deleted'],
       showMoreInfo: false,
       temp: {

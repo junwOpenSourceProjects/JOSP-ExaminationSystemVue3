@@ -104,6 +104,13 @@ export function fetchCollege(query) {
     params: query
   })
 }
+export function fetchAcademyList() {
+  return request({
+    url: '/College/academyList',
+    method: 'get',
+    params: {}
+  })
+}
 export function insertOrUpdateCollege(data) {
   return request({
     url: '/College/insertOrUpdate',
