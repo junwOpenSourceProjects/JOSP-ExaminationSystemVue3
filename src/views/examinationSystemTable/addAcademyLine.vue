@@ -1,16 +1,5 @@
 <template>
   <div class = "app-container">
-    <div class = "filter-container">
-      <el-button
-        class = "filter-item"
-        style = "margin-left: 10px;"
-        type = "primary"
-        icon = "el-icon-edit"
-        @click = "handleCreate"
-      >
-        {{ '添加' }}
-      </el-button>
-    </div>
     <el-form ref = "dataForm"
              :rules = "rules"
              :model = "temp"
@@ -103,25 +92,8 @@
         </el-form-item>
       </el-card>
     </el-form>
-    <pagination
-      v-show = "total>0"
-      :total = "total"
-      :page.sync = "listQuery.page"
-      :limit.sync = "listQuery.limit"
-      @pagination = "getList"
-    />
     <!--新增和编辑的弹窗-->
     <el-dialog :title = "textMap[dialogStatus]" :visible.sync = "dialogFormVisible">
-    </el-dialog>
-
-    <el-dialog :visible.sync = "dialogPvVisible" title = "Reading statistics">
-      <el-table :data = "pvData" border fit highlight-current-row style = "width: 100%">
-        <el-table-column prop = "key" label = "Channel"/>
-        <el-table-column prop = "pv" label = "Pv"/>
-      </el-table>
-      <span slot = "footer" class = "dialog-footer">
-        <el-button type = "primary" @click = "dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
-      </span>
     </el-dialog>
   </div>
 </template>
@@ -131,42 +103,12 @@ import {fetchAcademyLine, fetchAcademyList, insertOrUpdateAcademyLine} from '@/a
 import waves from '@/directive/waves' // waves directive
 import {parseTime} from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-// 专业代码
-const subjectCodeOptions = [
-  {key: '030500', display_name: '马克思主义理论'},
-  {key: '071200', display_name: '科学技术史'},
-  {key: '010108', display_name: '科学技术哲学'}
-]
-const isCheckedOptions = [
-  {key: '0', display_name: '录取'},
-  {key: '1', display_name: '落榜'}
-]
-
-// arr to obj, such as { 030500 : "马克思主义理论", 071200 : "科学技术史" }
-const subjectCodeKeyValue = subjectCodeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
-
-const excelName = '查询院线'
 
 export default {
   name: 'addAcademyLine',
   components: {Pagination},
   directives: {waves},
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    },
-    subjectCodeFilter(type) {
-      return subjectCodeKeyValue[type]
-    }
-  },
+  filters: {},
   data() {
     return {
       tableKey: 0,
@@ -183,8 +125,6 @@ export default {
         academySearchInput: '',
         sort: '0'
       },
-      isCheckedOptions,
-      subjectCodeOptions,
       sortOptions: [{label: '高分优先', key: '0'}, {label: '低分优先', key: '1'}],
       academyList: [{label: '学院1', key: '0'}, {label: '学院2', key: '1'}],
       statusOptions: ['published', 'draft', 'deleted'],
@@ -250,30 +190,6 @@ export default {
         }, 1.5 * 1000)
       })
     },
-    handleFilter() {
-      // todo 这里如果没有条件，就默认查询马院的三个代码
-      this.listQuery.page = 1
-      this.getList()
-    },
-    handleFilterRefresh() {
-      this.listQuery.page = 1
-      this.listQuery.studentName = ''
-      this.getList()
-    },
-    sortChange(data) {
-      const {prop, order} = data
-      if (prop === 'id') {
-        this.sortByID(order)
-      }
-    },
-    sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
-      } else {
-        this.listQuery.sort = '-id'
-      }
-      this.handleFilter()
-    },
     resetTemp() {
       this.temp = {
         id: undefined,
@@ -315,6 +231,7 @@ export default {
           })
         }
       }).then(() => {
+          this.$refs['dataForm'].clearValidate()
           this.getList()
         }
       )
@@ -341,39 +258,6 @@ export default {
             })
           })
         }
-      })
-    },
-    handleHide(row, index) {
-      this.$notify({
-        title: '隐藏成功',
-        message: '刷新后再次出现',
-        type: 'success',
-        duration: 2000
-      })
-      this.list.splice(index, 1)
-    }, handleDelete(row, index) {
-      this.$notify({
-        title: '暂无删除',
-        message: '暂无删除',
-        type: 'success',
-        duration: 2000
-      })
-      this.list.splice(index, 1)
-    },
-    handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        // 设置文件头
-        const tHeader = ['id', '初试排名', '学生姓名', '学生编号', '学科名称', '政治', '英语', '专业课一', '专业课二', '初试总分', '初试公共课总分', '初试专业课总分', '备注']
-        // 设置文件需要的展示列
-        const filterVal = ['id', 'rank', 'studentName', 'studentCode', 'subjectName', 'scorePolite', 'scoreEnglish', 'scoreProfessional1', 'scoreProfessional2', 'scoreTotal', 'scoreTotalPublic', 'scoreTotalProfessional', 'remark']
-        const data = this.formatJson(filterVal)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: excelName
-        })
-        this.downloadLoading = false
       })
     },
     formatJson(filterVal) {
