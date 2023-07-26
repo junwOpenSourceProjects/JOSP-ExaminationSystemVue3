@@ -1,133 +1,165 @@
 <template>
-  <div class = "app-container">
-    <div class = "filter-container">
+  <div class="app-container">
+    <div class="filter-container">
       <el-input
-        v-model = "listQuery.studentName"
-        :placeholder = "'大类名称'"
-        style = "width: 200px;"
-        class = "filter-item"
+        v-model="listQuery.studentName"
+        :placeholder="'大类名称'"
+        class="filter-item"
         clearable
-        @keyup.enter.native = "handleFilter"
+        style="width: 200px"
+        @keyup.enter.native="handleFilter"
       />
       <el-select
-        v-model = "listQuery.studentClass"
-        :placeholder = "'A/B地区'"
+        v-model="listQuery.studentClass"
+        :placeholder="'A/B地区'"
+        class="filter-item"
         clearable
-        style = "width: 90px"
-        class = "filter-item"
-      >
-        <el-option v-for = "item in studentClassOptions" :key = "item.key" :label = "item.display_name"
-                   :value = "item.key"/>
-      </el-select>
-      <el-select
-        v-model = "listQuery.degreeType"
-        :placeholder = "'学位类型'"
-        clearable
-        class = "filter-item"
-        style = "width: 130px"
+        style="width: 90px"
       >
         <el-option
-          v-for = "item in degreeTypeOptions"
-          :key = "item.key"
-          :label = "item.display_name+'('+item.key+')'"
-          :value = "item.key"
+          v-for="item in studentClassOptions"
+          :key="item.key"
+          :label="item.display_name"
+          :value="item.key"
         />
       </el-select>
-      <el-select v-model = "listQuery.sort" style = "width: 140px" class = "filter-item" @change = "handleFilter">
-        <el-option v-for = "item in sortOptions" :key = "item.key" :label = "item.label" :value = "item.key"/>
-      </el-select>
-      <el-button v-waves class = "filter-item" type = "primary" icon = "el-icon-search" @click = "handleFilter">
-        {{ '搜索' }}
-      </el-button>
-      <el-button v-waves class = "filter-item" type = "primary" icon = "el-icon-search" @click = "handleFilterRefresh">
-        <!--todo 没有设置清空表单的方法-->
-        {{ '重置条件' }}
-      </el-button>
-      <el-button
-        class = "filter-item"
-        style = "margin-left: 10px;"
-        type = "primary"
-        icon = "el-icon-edit"
-        @click = "handleCreate"
-        disabled
+      <el-select
+        v-model="listQuery.degreeType"
+        :placeholder="'学位类型'"
+        class="filter-item"
+        clearable
+        style="width: 130px"
       >
-        {{ '添加' }}
+        <el-option
+          v-for="item in degreeTypeOptions"
+          :key="item.key"
+          :label="item.display_name + '(' + item.key + ')'"
+          :value="item.key"
+        />
+      </el-select>
+      <el-select
+        v-model="listQuery.sort"
+        class="filter-item"
+        style="width: 140px"
+        @change="handleFilter"
+      >
+        <el-option
+          v-for="item in sortOptions"
+          :key="item.key"
+          :label="item.label"
+          :value="item.key"
+        />
+      </el-select>
+      <el-button
+        v-waves
+        class="filter-item"
+        icon="el-icon-search"
+        type="primary"
+        @click="handleFilter"
+      >
+        {{ "搜索" }}
       </el-button>
       <el-button
         v-waves
-        :loading = "downloadLoading"
-        class = "filter-item"
-        type = "primary"
-        icon = "el-icon-download"
-        @click = "handleDownload"
+        class="filter-item"
+        icon="el-icon-search"
+        type="primary"
+        @click="handleFilterRefresh"
       >
-        {{ '导出' }}
+        <!--todo 没有设置清空表单的方法-->
+        {{ "重置条件" }}
       </el-button>
-      <el-checkbox v-model = "showMoreInfo" class = "filter-item" style = "margin-left:15px;"
-                   @change = "tableKey=tableKey+1">
-        {{ '展示更多' }}
+      <el-button
+        class="filter-item"
+        disabled
+        icon="el-icon-edit"
+        style="margin-left: 10px"
+        type="primary"
+        @click="handleCreate"
+      >
+        {{ "添加" }}
+      </el-button>
+      <el-button
+        v-waves
+        :loading="downloadLoading"
+        class="filter-item"
+        icon="el-icon-download"
+        type="primary"
+        @click="handleDownload"
+      >
+        {{ "导出" }}
+      </el-button>
+      <el-checkbox
+        v-model="showMoreInfo"
+        class="filter-item"
+        style="margin-left: 15px"
+        @change="tableKey = tableKey + 1"
+      >
+        {{ "展示更多" }}
       </el-checkbox>
     </div>
 
     <el-table
-      :key = "tableKey"
-      v-loading = "listLoading"
-      :data = "list"
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="list"
       border
       fit
       highlight-current-row
-      style = "width: 100%;"
-      @sort-change = "sortChange"
+      style="width: 100%"
+      @sort-change="sortChange"
     >
       <el-table-column
-        type = "index"
-        label = "序号"
-        width = "120px"
+        align="center"
+        label="序号"
         sortable
-        align = "center"
+        type="index"
+        width="120px"
       />
-      <el-table-column :label = "'学科大类'" min-width = "150px">
-        <template slot-scope = "{row}">
-          <span class = "link-type" @click = "handleUpdate(row)">{{ row.subjectClass }}</span>
+      <el-table-column :label="'学科大类'" min-width="150px">
+        <template slot-scope="{ row }">
+          <span class="link-type" @click="handleUpdate(row)">{{
+            row.subjectClass
+          }}</span>
           <!--todo 这里放专业-->
           <el-tag>{{ row.studentClass | studentClassFilter }}</el-tag>
         </template>
       </el-table-column>
       <!--==========================================================================-->
       <el-table-column
-        prop = "scorePolite"
-        label = "政治"
-        width = "80px"
+        align="center"
+        label="政治"
+        prop="scorePolite"
         sortable
-        align = "center"
+        width="80px"
       />
       <el-table-column
-        prop = "scoreEnglish"
-        label = "英语"
-        width = "80px"
+        align="center"
+        label="英语"
+        prop="scoreEnglish"
         sortable
-        align = "center"
+        width="80px"
       />
       <el-table-column
-        prop = "scoreProfessional1"
-        label = "专业课一"
-        width = "120px"
+        align="center"
+        label="专业课一"
+        prop="scoreProfessional1"
         sortable
-        align = "center"
+        width="120px"
       />
       <el-table-column
-        prop = "scoreProfessional2"
-        label = "专业课二"
-        width = "120px"
+        align="center"
+        label="专业课二"
+        prop="scoreProfessional2"
         sortable
-        align = "center"
+        width="120px"
       />
       <el-table-column
-        prop = "scoreTotal"
-        label = "总分"
-        width = "80px"
+        align="center"
+        label="总分"
+        prop="scoreTotal"
         sortable
-        align = "center"
+        width="80px"
       />
       <!--<el-table-column-->
       <!--  prop = "rank"-->
@@ -136,32 +168,50 @@
       <!--  sortable-->
       <!--  align = "center"-->
       <!--/>-->
-      <el-table-column v-if = "showMoreInfo" :label = "'公共课总分'" width = "120px" sortable align = "center">
-        <template slot-scope = "{row}">
-          <span style = "color:red;">{{ row.scoreTotalPublic }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if = "showMoreInfo" :label = "'专业课总分'" width = "120px" sortable align = "center">
-        <template slot-scope = "{row}">
-          <span style = "color:red;">{{ row.scoreTotalProfessional }}</span>
+      <el-table-column
+        v-if="showMoreInfo"
+        :label="'公共课总分'"
+        align="center"
+        sortable
+        width="120px"
+      >
+        <template slot-scope="{ row }">
+          <span style="color: red">{{ row.scoreTotalPublic }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        prop = "degreeType"
-        label = "学硕/专硕"
-        width = "120px"
+        v-if="showMoreInfo"
+        :label="'专业课总分'"
+        align="center"
         sortable
-        align = "center"
+        width="120px"
       >
-        <template slot-scope = "{row}">
-          <el-tag :type = "row.degreeType | degreeTypeFilter">
+        <template slot-scope="{ row }">
+          <span style="color: red">{{ row.scoreTotalProfessional }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        align="center"
+        label="学硕/专硕"
+        prop="degreeType"
+        sortable
+        width="120px"
+      >
+        <template slot-scope="{ row }">
+          <el-tag :type="row.degreeType | degreeTypeFilter">
             {{ row.degreeType }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if = "showMoreInfo" :label = "'学科编号'" width = "110px" sortable align = "center">
-        <template slot-scope = "{row}">
-          <span style = "color:red;">{{ row.subjectCode }}</span>
+      <el-table-column
+        v-if="showMoreInfo"
+        :label="'学科编号'"
+        align="center"
+        sortable
+        width="110px"
+      >
+        <template slot-scope="{ row }">
+          <span style="color: red">{{ row.subjectCode }}</span>
         </template>
       </el-table-column>
       <!--==========================================================================-->
@@ -170,118 +220,178 @@
       <!--    <span style = "color:red;">{{ row.remark }}</span>-->
       <!--  </template>-->
       <!--</el-table-column>-->
-      <el-table-column :label = "$t('table.actions')" align = "center" width = "280px"
-                       class-name = "small-padding fixed-width">
-        <template slot-scope = "{row,$index}">
-          <el-button type = "primary" size = "mini" @click = "handleUpdate(row)">
-            {{ $t('table.edit') }}
+      <el-table-column
+        :label="$t('table.actions')"
+        align="center"
+        class-name="small-padding fixed-width"
+        width="280px"
+      >
+        <template slot-scope="{ row, $index }">
+          <el-button size="mini" type="primary" @click="handleUpdate(row)">
+            {{ $t("table.edit") }}
           </el-button>
-          <el-button v-if = "row.status!='deleted'" size = "mini" type = "default" @click = "handleHide(row,$index)">
-            {{ '隐藏' }}
+          <el-button
+            v-if="row.status != 'deleted'"
+            size="mini"
+            type="default"
+            @click="handleHide(row, $index)"
+          >
+            {{ "隐藏" }}
           </el-button>
-          <el-button v-if = "row.status!='deleted'" size = "mini" type = "danger" @click = "handleDelete(row,$index)"
-                     disabled>
-            {{ '删除' }}
+          <el-button
+            v-if="row.status != 'deleted'"
+            disabled
+            size="mini"
+            type="danger"
+            @click="handleDelete(row, $index)"
+          >
+            {{ "删除" }}
           </el-button>
         </template>
       </el-table-column>
-
     </el-table>
 
     <pagination
-      v-show = "total>0"
-      :total = "total"
-      :page.sync = "listQuery.page"
-      :limit.sync = "listQuery.limit"
-      @pagination = "getList"
+      v-show="total > 0"
+      :limit.sync="listQuery.limit"
+      :page.sync="listQuery.page"
+      :total="total"
+      @pagination="getList"
     />
     <!--新增和编辑的弹窗-->
-    <el-dialog :title = "textMap[dialogStatus]" :visible.sync = "dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
-        ref = "dataForm"
-        :rules = "rules"
-        :model = "temp"
-        label-position = "left"
-        label-width = "140px"
-        style = "width: 400px; margin-left:50px;"
+        ref="dataForm"
+        :model="temp"
+        :rules="rules"
+        label-position="left"
+        label-width="140px"
+        style="width: 400px; margin-left: 50px"
       >
-        <el-form-item label = "国家线主键" prop = "id">
-          <el-input placeholder = "请输入国家线主键 primary key" v-model = "temp.id" :disabled = "true"></el-input>
+        <el-form-item label="国家线主键" prop="id">
+          <el-input
+            v-model="temp.id"
+            :disabled="true"
+            placeholder="请输入国家线主键 primary key"
+          />
         </el-form-item>
-        <el-form-item label = "学科类型" prop = "subjectClass">
-          <el-input placeholder = "请输入学科类型" v-model = "temp.subjectClass" :disabled = "true"></el-input>
+        <el-form-item label="学科类型" prop="subjectClass">
+          <el-input
+            v-model="temp.subjectClass"
+            :disabled="true"
+            placeholder="请输入学科类型"
+          />
         </el-form-item>
-        <el-form-item label = "ab类学生" prop = "studentClass">
-          <el-input placeholder = "请输入ab类学生" v-model = "temp.studentClass" :disabled = "true"></el-input>
+        <el-form-item label="ab类学生" prop="studentClass">
+          <el-input
+            v-model="temp.studentClass"
+            :disabled="true"
+            placeholder="请输入ab类学生"
+          />
         </el-form-item>
-        <el-form-item label = "政治国家线" prop = "scorePolite">
-          <el-input placeholder = "请输入政治国家线" v-model = "temp.scorePolite" :disabled = "true"></el-input>
+        <el-form-item label="政治国家线" prop="scorePolite">
+          <el-input
+            v-model="temp.scorePolite"
+            :disabled="true"
+            placeholder="请输入政治国家线"
+          />
         </el-form-item>
-        <el-form-item label = "英语国家线" prop = "scoreEnglish">
-          <el-input placeholder = "请输入英语国家线" v-model = "temp.scoreEnglish" :disabled = "true"></el-input>
+        <el-form-item label="英语国家线" prop="scoreEnglish">
+          <el-input
+            v-model="temp.scoreEnglish"
+            :disabled="true"
+            placeholder="请输入英语国家线"
+          />
         </el-form-item>
-        <el-form-item label = "专业课一国家线" prop = "scoreProfessional1">
-          <el-input placeholder = "请输入专业课一国家线" v-model = "temp.scoreProfessional1"
-                    :disabled = "true"></el-input>
+        <el-form-item label="专业课一国家线" prop="scoreProfessional1">
+          <el-input
+            v-model="temp.scoreProfessional1"
+            :disabled="true"
+            placeholder="请输入专业课一国家线"
+          />
         </el-form-item>
-        <el-form-item label = "专业课二国家线" prop = "scoreProfessional2">
-          <el-input placeholder = "请输入专业课二国家线" v-model = "temp.scoreProfessional2"
-                    :disabled = "true"></el-input>
+        <el-form-item label="专业课二国家线" prop="scoreProfessional2">
+          <el-input
+            v-model="temp.scoreProfessional2"
+            :disabled="true"
+            placeholder="请输入专业课二国家线"
+          />
         </el-form-item>
-        <el-form-item label = "总分国家线" prop = "scoreTotal">
-          <el-input placeholder = "请输入总分国家线" v-model = "temp.scoreTotal" :disabled = "true"></el-input>
+        <el-form-item label="总分国家线" prop="scoreTotal">
+          <el-input
+            v-model="temp.scoreTotal"
+            :disabled="true"
+            placeholder="请输入总分国家线"
+          />
         </el-form-item>
-        <el-form-item label = "公共课总分国家线" prop = "scoreTotalPublic">
-          <el-input placeholder = "请输入公共课总分国家线" v-model = "temp.scoreTotalPublic"
-                    :disabled = "true"></el-input>
+        <el-form-item label="公共课总分国家线" prop="scoreTotalPublic">
+          <el-input
+            v-model="temp.scoreTotalPublic"
+            :disabled="true"
+            placeholder="请输入公共课总分国家线"
+          />
         </el-form-item>
-        <el-form-item label = "专业课总分国家线" prop = "scoreTotalProfessional">
-          <el-input placeholder = "请输入专业课总分国家线" v-model = "temp.scoreTotalProfessional"
-                    :disabled = "true"></el-input>
+        <el-form-item label="专业课总分国家线" prop="scoreTotalProfessional">
+          <el-input
+            v-model="temp.scoreTotalProfessional"
+            :disabled="true"
+            placeholder="请输入专业课总分国家线"
+          />
         </el-form-item>
       </el-form>
-      <div slot = "footer" class = "dialog-footer">
-        <el-button @click = "dialogFormVisible = false">
-          {{ $t('table.cancel') }}
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">
+          {{ $t("table.cancel") }}
         </el-button>
-        <el-button type = "primary" @click = "dialogStatus==='create'?createData():updateData()">
-          {{ $t('table.confirm') }}
+        <el-button
+          type="primary"
+          @click="dialogStatus === 'create' ? createData() : updateData()"
+        >
+          {{ $t("table.confirm") }}
         </el-button>
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync = "dialogPvVisible" title = "Reading statistics">
-      <el-table :data = "pvData" border fit highlight-current-row style = "width: 100%">
-        <el-table-column prop = "key" label = "Channel"/>
-        <el-table-column prop = "pv" label = "Pv"/>
+    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
+      <el-table
+        :data="pvData"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%"
+      >
+        <el-table-column label="Channel" prop="key" />
+        <el-table-column label="Pv" prop="pv" />
       </el-table>
-      <span slot = "footer" class = "dialog-footer">
-        <el-button type = "primary" @click = "dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogPvVisible = false">{{
+          $t("table.confirm")
+        }}</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import {fetchNationLine, insertOrUpdateNationLine} from '@/api/examination'
+import { fetchNationLine, insertOrUpdateNationLine } from '@/api/examination'
 import waves from '@/directive/waves' // waves directive
-import {parseTime} from '@/utils'
+import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 // 专业代码
 const degreeTypeOptions = [
-  {key: 'Academic', display_name: '学硕'},
-  {key: 'Professional', display_name: '专硕'},
+  { key: 'Academic', display_name: '学硕' },
+  { key: 'Professional', display_name: '专硕' }
 ]
 const studentClassOptions = [
-  {key: 'A', display_name: 'A类'},
-  {key: 'B', display_name: 'B类'}
+  { key: 'A', display_name: 'A类' },
+  { key: 'B', display_name: 'B类' }
 ]
 
 // arr to obj, such as { 030500 : "马克思主义理论", 071200 : "科学技术史" }
-const degreeTypeKeyValue = degreeTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
+// const degreeTypeKeyValue = degreeTypeOptions.reduce((acc, cur) => {
+//   acc[cur.key] = cur.display_name
+//   return acc
+// }, {})
 
 const studentClassKeyValue = studentClassOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
@@ -292,13 +402,13 @@ const excelName = '国家线分数表'
 
 export default {
   name: 'QueryNationLineTable',
-  components: {Pagination},
-  directives: {waves},
+  components: { Pagination },
+  directives: { waves },
   filters: {
     degreeTypeFilter(status) {
       const statusMap = {
         Academic: 'success',
-        Professional: 'info',
+        Professional: 'info'
       }
       return statusMap[status]
     },
@@ -323,7 +433,10 @@ export default {
       },
       studentClassOptions,
       degreeTypeOptions,
-      sortOptions: [{label: '高分优先', key: '0'}, {label: '低分优先', key: '1'}],
+      sortOptions: [
+        { label: '高分优先', key: '0' },
+        { label: '低分优先', key: '1' }
+      ],
       statusOptions: ['published', 'draft', 'deleted'],
       showMoreInfo: false,
       temp: {
@@ -339,7 +452,7 @@ export default {
         scoreTotalProfessional: '',
         subjectName: '',
         degreeType: '',
-        subjectCode: 1,
+        subjectCode: 1
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -350,9 +463,24 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        type: [{required: true, message: 'type is required', trigger: 'change'}],
-        timestamp: [{type: 'date', required: true, message: 'timestamp is required', trigger: 'change'}],
-        studentName: [{required: true, message: 'studentName is required', trigger: 'blur'}]
+        type: [
+          { required: true, message: 'type is required', trigger: 'change' }
+        ],
+        timestamp: [
+          {
+            type: 'date',
+            required: true,
+            message: 'timestamp is required',
+            trigger: 'change'
+          }
+        ],
+        studentName: [
+          {
+            required: true,
+            message: 'studentName is required',
+            trigger: 'blur'
+          }
+        ]
       },
       downloadLoading: false
     }
@@ -363,7 +491,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchNationLine(this.listQuery).then(response => {
+      fetchNationLine(this.listQuery).then((response) => {
         this.list = response.data.records
         this.total = response.data.total
 
@@ -384,7 +512,7 @@ export default {
       this.getList()
     },
     sortChange(data) {
-      const {prop, order} = data
+      const { prop, order } = data
       if (prop === 'id') {
         this.sortByID(order)
       }
@@ -412,7 +540,7 @@ export default {
         scoreTotal: '',
         scoreTotalPublic: '',
         scoreTotalProfessional: '',
-        remark: '',
+        remark: ''
       }
     },
     handleCreate() {
@@ -471,7 +599,8 @@ export default {
         duration: 2000
       })
       this.list.splice(index, 1)
-    }, handleDelete(row, index) {
+    },
+    handleDelete(row, index) {
       this.$notify({
         title: '暂无删除',
         message: '暂无删除',
@@ -482,11 +611,37 @@ export default {
     },
     handleDownload() {
       this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
+      import('@/vendor/Export2Excel').then((excel) => {
         // 设置文件头
-        const tHeader = ['国家线主键', '学科类型', 'AB类学生', '政治国家线', '英语国家线', '专业课一国家线', '专业课二国家线', '总分国家线', '公共课总分国家线', '专业课总分国家线', '学硕专硕', '学科大类']
+        const tHeader = [
+          '国家线主键',
+          '学科类型',
+          'AB类学生',
+          '政治国家线',
+          '英语国家线',
+          '专业课一国家线',
+          '专业课二国家线',
+          '总分国家线',
+          '公共课总分国家线',
+          '专业课总分国家线',
+          '学硕专硕',
+          '学科大类'
+        ]
         // 设置文件需要的展示列
-        const filterVal = ['id', 'subjectClass', 'studentClass', 'scorePolite', 'scoreEnglish', 'scoreProfessional1', 'scoreProfessional2', 'scoreTotal', 'scoreTotalPublic', 'scoreTotalProfessional', 'degreeType', 'subjectCode']
+        const filterVal = [
+          'id',
+          'subjectClass',
+          'studentClass',
+          'scorePolite',
+          'scoreEnglish',
+          'scoreProfessional1',
+          'scoreProfessional2',
+          'scoreTotal',
+          'scoreTotalPublic',
+          'scoreTotalProfessional',
+          'degreeType',
+          'subjectCode'
+        ]
         const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,
@@ -497,14 +652,16 @@ export default {
       })
     },
     formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
-    },
+      return this.list.map((v) =>
+        filterVal.map((j) => {
+          if (j === 'timestamp') {
+            return parseTime(v[j])
+          } else {
+            return v[j]
+          }
+        })
+      )
+    }
   }
 }
 </script>

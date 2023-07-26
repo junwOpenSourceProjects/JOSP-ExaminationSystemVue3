@@ -1,154 +1,205 @@
 <template>
-  <div class = "app-container">
-    <div class = "filter-container">
+  <div class="app-container">
+    <div class="filter-container">
       <el-input
-        v-model = "listQuery.academyName"
-        :placeholder = "'学院名称'"
-        style = "width: 500px;"
-        class = "filter-item"
+        v-model="listQuery.academyName"
+        :placeholder="'学院名称'"
+        class="filter-item"
         clearable
-        @keyup.enter.native = "handleFilter"
-
+        style="width: 500px"
+        @keyup.enter.native="handleFilter"
       />
-      <el-button v-waves class = "filter-item" type = "primary" icon = "el-icon-search" @click = "handleFilter">
-        {{ '搜索' }}
-      </el-button>
-      <el-button v-waves class = "filter-item" type = "primary" icon = "el-icon-search" @click = "handleFilterRefresh">
-        <!--todo 没有设置清空表单的方法-->
-        {{ '重置条件' }}
+      <el-button
+        v-waves
+        class="filter-item"
+        icon="el-icon-search"
+        type="primary"
+        @click="handleFilter"
+      >
+        {{ "搜索" }}
       </el-button>
       <el-button
         v-waves
-        :loading = "downloadLoading"
-        class = "filter-item"
-        type = "primary"
-        icon = "el-icon-download"
-        disabled
-        @click = "handleDownload"
+        class="filter-item"
+        icon="el-icon-search"
+        type="primary"
+        @click="handleFilterRefresh"
       >
-        {{ '导出' }}
+        <!--todo 没有设置清空表单的方法-->
+        {{ "重置条件" }}
       </el-button>
-      <el-checkbox v-model = "showMoreInfo" class = "filter-item" style = "margin-left:15px;"
-                   @change = "tableKey=tableKey+1">
-        {{ '展示更多' }}
+      <el-button
+        v-waves
+        :loading="downloadLoading"
+        class="filter-item"
+        disabled
+        icon="el-icon-download"
+        type="primary"
+        @click="handleDownload"
+      >
+        {{ "导出" }}
+      </el-button>
+      <el-checkbox
+        v-model="showMoreInfo"
+        class="filter-item"
+        style="margin-left: 15px"
+        @change="tableKey = tableKey + 1"
+      >
+        {{ "展示更多" }}
       </el-checkbox>
     </div>
 
     <el-table
-      :key = "tableKey"
-      v-loading = "listLoading"
-      :data = "list"
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="list"
       border
       fit
       highlight-current-row
-      style = "width: 100%;"
-      @sort-change = "sortChange"
+      style="width: 100%"
+      @sort-change="sortChange"
     >
       <el-table-column
-        type = "index"
-        label = "序号"
-        width = "120px"
+        align="center"
+        label="序号"
         sortable
-        align = "center"
+        type="index"
+        width="120px"
       />
       <!--==========================================================================-->
       <el-table-column
-        prop = "academyCode"
-        label = "学院编号"
-        width = "120px"
+        align="center"
+        label="学院编号"
+        prop="academyCode"
         sortable
-        align = "center"
+        width="120px"
       />
       <el-table-column
-        prop = "academyName"
-        label = "学院名称"
-        width = "500px"
+        align="center"
+        label="学院名称"
+        prop="academyName"
         sortable
-        align = "center"
+        width="500px"
       />
       <!--==========================================================================-->
-      <el-table-column v-if = "showMoreInfo" :label = "'显示备注'" width = "110px" align = "center">
-        <template slot-scope = "{row}">
-          <span style = "color:red;">{{ row.remark }}</span>
+      <el-table-column
+        v-if="showMoreInfo"
+        :label="'显示备注'"
+        align="center"
+        width="110px"
+      >
+        <template slot-scope="{ row }">
+          <span style="color: red">{{ row.remark }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label = "$t('table.actions')" align = "center" width = "280px"
-                       class-name = "small-padding fixed-width">
-        <template slot-scope = "{row,$index}">
-          <el-button type = "primary" size = "mini" @click = "handleUpdate(row)">
-            {{ $t('table.edit') }}
+      <el-table-column
+        :label="$t('table.actions')"
+        align="center"
+        class-name="small-padding fixed-width"
+        width="280px"
+      >
+        <template slot-scope="{ row, $index }">
+          <el-button size="mini" type="primary" @click="handleUpdate(row)">
+            {{ $t("table.edit") }}
           </el-button>
-          <el-button v-if = "row.status!='deleted'" size = "mini" type = "default" @click = "handleHide(row,$index)">
-            {{ '隐藏' }}
+          <el-button
+            v-if="row.status != 'deleted'"
+            size="mini"
+            type="default"
+            @click="handleHide(row, $index)"
+          >
+            {{ "隐藏" }}
           </el-button>
         </template>
       </el-table-column>
-
     </el-table>
 
     <pagination
-      v-show = "total>0"
-      :total = "total"
-      :page.sync = "listQuery.page"
-      :limit.sync = "listQuery.limit"
-      @pagination = "getList"
+      v-show="total > 0"
+      :limit.sync="listQuery.limit"
+      :page.sync="listQuery.page"
+      :total="total"
+      @pagination="getList"
     />
     <!--新增和编辑的弹窗-->
-    <el-dialog :title = "textMap[dialogStatus]" :visible.sync = "dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
-        ref = "dataForm"
-        :rules = "rules"
-        :model = "temp"
-        label-position = "left"
-        label-width = "140px"
-        style = "width: 400px; margin-left:50px;"
+        ref="dataForm"
+        :model="temp"
+        :rules="rules"
+        label-position="left"
+        label-width="140px"
+        style="width: 400px; margin-left: 50px"
       >
-        <el-form-item label = "复试线主键" prop = "id">
-          <el-input placeholder = "请输入复试线主键" v-model = "temp.id" :disabled = "true"></el-input>
+        <el-form-item label="复试线主键" prop="id">
+          <el-input
+            v-model="temp.id"
+            :disabled="true"
+            placeholder="请输入复试线主键"
+          />
         </el-form-item>
-        <el-form-item label = "学院代码" prop = "academyCode">
-          <el-input placeholder = "请输入学院代码" v-model = "temp.academyCode" :disabled = "true"></el-input>
+        <el-form-item label="学院代码" prop="academyCode">
+          <el-input
+            v-model="temp.academyCode"
+            :disabled="true"
+            placeholder="请输入学院代码"
+          />
         </el-form-item>
-        <el-form-item label = "学院名称" prop = "academyName">
-          <el-input placeholder = "请输入学院名称" v-model = "temp.academyName" :disabled = "true"></el-input>
+        <el-form-item label="学院名称" prop="academyName">
+          <el-input
+            v-model="temp.academyName"
+            :disabled="true"
+            placeholder="请输入学院名称"
+          />
         </el-form-item>
       </el-form>
-      <div slot = "footer" class = "dialog-footer">
-        <el-button @click = "dialogFormVisible = false">
-          {{ $t('table.cancel') }}
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">
+          {{ $t("table.cancel") }}
         </el-button>
-        <el-button type = "primary" @click = "dialogStatus==='create'?createData():updateData()">
-          {{ $t('table.confirm') }}
+        <el-button
+          type="primary"
+          @click="dialogStatus === 'create' ? createData() : updateData()"
+        >
+          {{ $t("table.confirm") }}
         </el-button>
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync = "dialogPvVisible" title = "Reading statistics">
-      <el-table :data = "pvData" border fit highlight-current-row style = "width: 100%">
-        <el-table-column prop = "key" label = "Channel"/>
-        <el-table-column prop = "pv" label = "Pv"/>
+    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
+      <el-table
+        :data="pvData"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%"
+      >
+        <el-table-column label="Channel" prop="key" />
+        <el-table-column label="Pv" prop="pv" />
       </el-table>
-      <span slot = "footer" class = "dialog-footer">
-        <el-button type = "primary" @click = "dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogPvVisible = false">{{
+          $t("table.confirm")
+        }}</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import {fetchCollege, insertOrUpdateCollege} from '@/api/examination'
+import { fetchCollege, insertOrUpdateCollege } from '@/api/examination'
 import waves from '@/directive/waves' // waves directive
-import {parseTime} from '@/utils'
+import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 // 专业代码
 const subjectCodeOptions = [
-  {key: '030500', display_name: '马克思主义理论'},
-  {key: '071200', display_name: '科学技术史'},
-  {key: '010108', display_name: '科学技术哲学'}
+  { key: '030500', display_name: '马克思主义理论' },
+  { key: '071200', display_name: '科学技术史' },
+  { key: '010108', display_name: '科学技术哲学' }
 ]
 const isCheckedOptions = [
-  {key: '0', display_name: '录取'},
-  {key: '1', display_name: '落榜'}
+  { key: '0', display_name: '录取' },
+  { key: '1', display_name: '落榜' }
 ]
 
 // arr to obj, such as { 030500 : "马克思主义理论", 071200 : "科学技术史" }
@@ -161,8 +212,8 @@ const excelName = '学院名称表'
 
 export default {
   name: 'QueryCollegeTable',
-  components: {Pagination},
-  directives: {waves},
+  components: { Pagination },
+  directives: { waves },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -190,13 +241,16 @@ export default {
       },
       isCheckedOptions,
       subjectCodeOptions,
-      sortOptions: [{label: '高分优先', key: '0'}, {label: '低分优先', key: '1'}],
+      sortOptions: [
+        { label: '高分优先', key: '0' },
+        { label: '低分优先', key: '1' }
+      ],
       statusOptions: ['published', 'draft', 'deleted'],
       showMoreInfo: false,
       temp: {
         id: undefined,
         academyCode: '',
-        academyName: '',
+        academyName: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -207,9 +261,24 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        type: [{required: true, message: 'type is required', trigger: 'change'}],
-        timestamp: [{type: 'date', required: true, message: 'timestamp is required', trigger: 'change'}],
-        academyName: [{required: true, message: 'academyName is required', trigger: 'blur'}]
+        type: [
+          { required: true, message: 'type is required', trigger: 'change' }
+        ],
+        timestamp: [
+          {
+            type: 'date',
+            required: true,
+            message: 'timestamp is required',
+            trigger: 'change'
+          }
+        ],
+        academyName: [
+          {
+            required: true,
+            message: 'academyName is required',
+            trigger: 'blur'
+          }
+        ]
       },
       downloadLoading: false
     }
@@ -220,7 +289,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchCollege(this.listQuery).then(response => {
+      fetchCollege(this.listQuery).then((response) => {
         this.list = response.data.records
         this.total = response.data.total
 
@@ -241,7 +310,7 @@ export default {
       this.getList()
     },
     sortChange(data) {
-      const {prop, order} = data
+      const { prop, order } = data
       if (prop === 'id') {
         this.sortByID(order)
       }
@@ -258,7 +327,7 @@ export default {
       this.temp = {
         id: undefined,
         academyCode: '',
-        academyName: '',
+        academyName: ''
       }
     },
     handleCreate() {
@@ -317,7 +386,8 @@ export default {
         duration: 2000
       })
       this.list.splice(index, 1)
-    }, handleDelete(row, index) {
+    },
+    handleDelete(row, index) {
       this.$notify({
         title: '暂无删除',
         message: '暂无删除',
@@ -328,7 +398,7 @@ export default {
     },
     handleDownload() {
       this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
+      import('@/vendor/Export2Excel').then((excel) => {
         // 设置文件头
         const tHeader = ['id', '学院代码', '学院名称', '复试进度']
         // 设置文件需要的展示列
@@ -343,14 +413,16 @@ export default {
       })
     },
     formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
-    },
+      return this.list.map((v) =>
+        filterVal.map((j) => {
+          if (j === 'timestamp') {
+            return parseTime(v[j])
+          } else {
+            return v[j]
+          }
+        })
+      )
+    }
   }
 }
 </script>
