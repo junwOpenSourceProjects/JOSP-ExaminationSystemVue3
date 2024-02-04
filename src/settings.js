@@ -1,3 +1,13 @@
+/*
+ * @Author: junw wo1261931780@gmail.com
+ * @Date: 2023-11-09 18:13:23
+ * @LastEditors: junw wo1261931780@gmail.com
+ * @LastEditTime: 2024-02-04 13:05:50
+ * @FilePath: \JOSP-ExaminationSystemVue\src\settings.js
+ * @Description: 1111
+ *
+ * Copyright (c) 2024 by ${git_name_email}, All Rights Reserved.
+ */
 module.exports = {
   title: 'Vue Element Admin',
 
