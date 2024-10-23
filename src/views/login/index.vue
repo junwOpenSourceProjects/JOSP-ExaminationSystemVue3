@@ -107,7 +107,7 @@ export default {
       loginForm: {
         id: 1, // 设置默认值
         username: 'admin',
-        password: '111111'
+        password: '123456'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
