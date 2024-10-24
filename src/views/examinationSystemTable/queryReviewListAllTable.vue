@@ -3,15 +3,15 @@
     <div class="filter-container">
       <el-input
         v-model="listQuery.studentName"
-        :placeholder="'姓名'"
+        placeholder="姓名"
         class="filter-item"
         clearable
         style="width: 300px"
-        @keyup.enter.native="handleFilter"
+        @keyup.enter="handleFilter"
       />
       <el-select
         v-model="listQuery.isChecked"
-        :placeholder="'录取情况'"
+        placeholder="录取情况"
         class="filter-item"
         clearable
         style="width: 80px"
@@ -25,7 +25,7 @@
       </el-select>
       <el-select
         v-model="listQuery.academySearchInput"
-        :placeholder="'学院名称'"
+        placeholder="学院名称"
         class="filter-item"
         clearable
         filterable
@@ -38,10 +38,9 @@
           :value="item.key"
         />
       </el-select>
-      <!--todo 根据学院的名称，查询出专业代码-->
       <el-select
         v-model="listQuery.subjectCode"
-        :placeholder="'专业代码'"
+        placeholder="专业代码"
         class="filter-item"
         clearable
         style="width: 200px"
@@ -53,36 +52,21 @@
           :value="item.key"
         />
       </el-select>
-      <el-select
-        v-model="listQuery.sort"
-        class="filter-item"
-        style="width: 140px"
-        @change="handleFilter"
-      >
-        <el-option
-          v-for="item in sortOptions"
-          :key="item.key"
-          :label="item.label"
-          :value="item.key"
-        />
-      </el-select>
       <el-button
-        v-waves
         class="filter-item"
         icon="el-icon-search"
         type="primary"
         @click="handleFilter"
       >
-        {{ "搜索" }}
+        搜索
       </el-button>
       <el-button
-        v-waves
         class="filter-item"
-        icon="el-icon-search"
+        icon="el-icon-refresh"
         type="primary"
         @click="handleFilterRefresh"
       >
-        {{ "重置条件" }}
+        重置条件
       </el-button>
       <el-button
         class="filter-item"
@@ -92,25 +76,24 @@
         type="primary"
         @click="handleCreate"
       >
-        {{ "添加" }}
+        添加
       </el-button>
       <el-button
-        v-waves
         :loading="downloadLoading"
         class="filter-item"
         icon="el-icon-download"
         type="primary"
         @click="handleDownload"
       >
-        {{ "导出" }}
+        导出
       </el-button>
       <el-checkbox
         v-model="showMoreInfo"
         class="filter-item"
         style="margin-left: 15px"
-        @change="tableKey = tableKey + 1"
+        @change="tableKey += 1"
       >
-        {{ "展示更多" }}
+        展示更多
       </el-checkbox>
     </div>
 
@@ -132,15 +115,12 @@
         width="120px"
       />
       <el-table-column :label="'考生姓名'" min-width="150px">
-        <template slot-scope="{ row }">
+        <template v-slot="{ row }">
           <span class="link-type" @click="handleUpdate(row)">{{
             row.studentName
           }}</span>
-          <!--todo 这里放专业-->
-          <el-tag>{{ row.studentCode | subjectCodeFilter }}</el-tag>
         </template>
       </el-table-column>
-      <!--==========================================================================-->
       <el-table-column
         align="center"
         label="政治"
@@ -185,106 +165,57 @@
       />
       <el-table-column
         v-if="showMoreInfo"
-        :label="'公共课总分'"
+        :label="'专业名称'"
         align="center"
         sortable
         width="120px"
-      >
-        <template slot-scope="{ row }">
-          <span style="color: red">{{ row.scoreTotalPublic }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        v-if="showMoreInfo"
-        :label="'专业课总分'"
-        align="center"
-        sortable
-        width="120px"
-      >
-        <template slot-scope="{ row }">
-          <span style="color: red">{{ row.scoreTotalProfessional }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        align="center"
-        label="专业名称"
         prop="subjectName"
-        sortable
-        width="120px"
       />
-      <el-table-column
-        v-if="showMoreInfo"
-        :label="'专业代码'"
-        align="center"
-        sortable
-        width="110px"
-      >
-        <template slot-scope="{ row }">
-          <span style="color: red">{{ row.subjectCode }}</span>
-        </template>
-      </el-table-column>
       <el-table-column
         v-if="showMoreInfo"
         :label="'考生编号'"
         align="center"
         sortable
         width="140px"
-      >
-        <template slot-scope="{ row }">
-          <span style="color: red">{{ row.studentCode }}</span>
-        </template>
-      </el-table-column>
-      <!--==========================================================================-->
+        prop="studentCode"
+      />
       <el-table-column
-        v-if="showMoreInfo"
-        :label="'显示备注'"
-        align="center"
-        width="110px"
-      >
-        <template slot-scope="{ row }">
-          <span style="color: red">{{ row.remark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        :label="$t('table.actions')"
+        :label="actions"
         align="center"
         class-name="small-padding fixed-width"
         width="280px"
       >
-        <template slot-scope="{ row, $index }">
+        <template v-slot="{ row }">
           <el-button size="mini" type="primary" @click="handleUpdate(row)">
-            {{ $t("table.edit") }}
+            编辑
+          </el-button>
+          <el-button size="mini" type="default" @click="handleHide(row)">
+            隐藏
           </el-button>
           <el-button
-            v-if="row.status != 'deleted'"
-            size="mini"
-            type="default"
-            @click="handleHide(row, $index)"
-          >
-            {{ "隐藏" }}
-          </el-button>
-          <el-button
-            v-if="row.status != 'deleted'"
             disabled
             size="mini"
             type="danger"
-            @click="handleDelete(row, $index)"
+            @click="handleDelete(row)"
           >
-            {{ "删除" }}
+            删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
+    <custom-pagination
       v-show="total > 0"
       :limit.sync="listQuery.limit"
       :page.sync="listQuery.page"
       :total="total"
       @pagination="getList"
     />
-    <!--新增和编辑的弹窗-->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+
+    <el-dialog
+      :title="dialogStatus === 'create' ? '添加' : '编辑'"
+      :visible.sync="dialogFormVisible"
+    >
       <el-form
         ref="dataForm"
         :model="temp"
@@ -360,364 +291,219 @@
             placeholder="请输入初试总分"
           />
         </el-form-item>
-        <el-form-item label="初试公共课总分" prop="scoreTotalPublic">
-          <el-input
-            v-model="temp.scoreTotalPublic"
-            :disabled="true"
-            placeholder="请输入初试公共课总分"
-          />
-        </el-form-item>
-        <el-form-item label="初试专业课总分" prop="scoreTotalProfessional">
-          <el-input
-            v-model="temp.scoreTotalProfessional"
-            :disabled="true"
-            placeholder="请输入初试专业课总分"
-          />
-        </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="temp.remark" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          {{ $t("table.cancel") }}
-        </el-button>
+        <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button
           type="primary"
           @click="dialogStatus === 'create' ? createData() : updateData()"
         >
-          {{ $t("table.confirm") }}
+          {{ dialogStatus === "create" ? "添加" : "编辑" }}
         </el-button>
       </div>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table
-        :data="pvData"
-        border
-        fit
-        highlight-current-row
-        style="width: 100%"
-      >
-        <el-table-column label="Channel" prop="key" />
-        <el-table-column label="Pv" prop="pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">{{
-          $t("table.confirm")
-        }}</el-button>
-      </span>
     </el-dialog>
   </div>
 </template>
 
-<script>
-import waves from "@/directive/waves"; // waves directive
-import { parseTime } from "@/utils";
-import Pagination from "@/components/Pagination";
-// secondary package based on el-pagination
-// 专业代码
+<script lang="ts">
+import { ref, onMounted, defineComponent } from "vue";
+import axios from "axios";
+
 const subjectCodeOptions = [
-  { key: "030500", display_name: "马克思主义理论" },
-  { key: "071200", display_name: "科学技术史" },
-  { key: "010108", display_name: "科学技术哲学" },
-];
-const isCheckedOptions = [
-  { key: "0", display_name: "录取" },
-  { key: "1", display_name: "落榜" },
+  { key: "100700", display_name: "药学" },
+  { key: "100701", display_name: "药学" },
+  // Add more options as needed
 ];
 
-// arr to obj, such as { 030500 : "马克思主义理论", 071200 : "科学技术史" }
-const subjectCodeKeyValue = subjectCodeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name;
-  return acc;
-}, {});
-
-const excelName = "所有专业复试名单";
-
-export default {
+export default defineComponent({
   name: "QueryReviewListAllTable",
-  components: { Pagination },
-  directives: { waves },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: "success",
-        draft: "info",
-        deleted: "danger",
-      };
-      return statusMap[status];
-    },
-    subjectCodeFilter(type) {
-      return subjectCodeKeyValue[type];
-    },
-  },
-  data() {
-    return {
-      tableKey: 0,
-      list: null,
-      total: 0,
-      listLoading: true,
-      listQuery: {
-        page: 1,
-        limit: 10,
-        subjectCode: "",
-        isChecked: undefined,
-        studentName: undefined,
-        type: undefined,
-        academySearchInput: "",
-        sort: "0",
-      },
-      isCheckedOptions,
-      subjectCodeOptions,
-      sortOptions: [
-        { label: "高分优先", key: "0" },
-        { label: "低分优先", key: "1" },
-      ],
-      academyList: [
-        { label: "学院1", key: "0" },
-        { label: "学院2", key: "1" },
-      ],
-      statusOptions: ["published", "draft", "deleted"],
-      showMoreInfo: false,
-      temp: {
+
+  setup() {
+    const tableKey = ref(0);
+    const list = ref<any[]>([]);
+    const total = ref(0);
+    const listLoading = ref(true);
+    const listQuery = ref({
+      page: 1,
+      limit: 10,
+      subjectCode: "",
+      isChecked: undefined,
+      studentName: "",
+      academySearchInput: "",
+      sort: 0,
+    });
+    const academyList = ref<any[]>([]);
+    const showMoreInfo = ref(false);
+    const temp = ref({
+      id: undefined,
+      rank: undefined,
+      studentName: "",
+      studentCode: "",
+      subjectCode: "",
+      subjectName: "",
+      scorePolite: "",
+      scoreEnglish: "",
+      scoreProfessional1: "",
+      scoreProfessional2: "",
+      scoreTotal: "",
+      remark: "",
+    });
+    const dialogFormVisible = ref(false);
+    const dialogStatus = ref("");
+    const downloadLoading = ref(false);
+    const rules = {
+      /* your validation rules here */
+    };
+    const sortOptions = ref([
+      { key: "0", label: "默认排序" },
+      { key: "1", label: "按总分排序" },
+      { key: "2", label: "按初试排名排序" },
+    ]);
+
+    const getList = async () => {
+      listLoading.value = true;
+      try {
+        const response = await axios.get("/dev-api/ReviewListAll/list", {
+          params: listQuery.value,
+        });
+        list.value = response.data.data.records; // 注意这里
+        total.value = response.data.data.total; // 注意这里
+      } catch (error) {
+        console.error(error);
+      } finally {
+        listLoading.value = false;
+      }
+    };
+
+    const handleFilter = () => {
+      listQuery.value.page = 1;
+      getList();
+    };
+
+    const handleFilterRefresh = () => {
+      listQuery.value.page = 1;
+      listQuery.value.studentName = "";
+      getList();
+    };
+
+    const handleCreate = () => {
+      resetTemp();
+      dialogStatus.value = "create";
+      dialogFormVisible.value = true;
+    };
+
+    const handleUpdate = (row: any) => {
+      temp.value = Object.assign({}, row);
+      dialogStatus.value = "update";
+      dialogFormVisible.value = true;
+    };
+
+    const createData = async () => {
+      // Logic for creating data
+    };
+
+    const updateData = async () => {
+      // Logic for updating data
+    };
+
+    const handleHide = (row: any) => {
+      // Logic for hiding
+    };
+
+    const handleDelete = (row: any) => {
+      // Logic for deleting
+    };
+
+    const handleDownload = async () => {
+      // Logic for downloading
+    };
+
+    const resetTemp = () => {
+      temp.value = {
         id: undefined,
         rank: undefined,
         studentName: "",
         studentCode: "",
-        subjectCode: 1,
+        subjectCode: "",
         subjectName: "",
         scorePolite: "",
         scoreEnglish: "",
         scoreProfessional1: "",
         scoreProfessional2: "",
         scoreTotal: "",
-        scoreTotalPublic: "",
-        scoreTotalProfessional: "",
         remark: "",
-      },
-      dialogFormVisible: false,
-      dialogStatus: "",
-      textMap: {
-        update: "Edit",
-        create: "Create",
-      },
-      dialogPvVisible: false,
-      pvData: [],
-      rules: {
-        type: [
-          { required: true, message: "type is required", trigger: "change" },
-        ],
-        timestamp: [
-          {
-            type: "date",
-            required: true,
-            message: "timestamp is required",
-            trigger: "change",
-          },
-        ],
-        studentName: [
-          {
-            required: true,
-            message: "studentName is required",
-            trigger: "blur",
-          },
-        ],
-      },
-      downloadLoading: false,
+      };
+    };
+
+    const sortChange = (data: any) => {
+      // Handle sorting
+    };
+
+    onMounted(() => {
+      getList();
+      // Fetch academy list etc.
+    });
+
+    return {
+      tableKey,
+      list,
+      total,
+      listLoading,
+      listQuery,
+      academyList,
+      subjectCodeOptions,
+      showMoreInfo,
+      temp,
+      dialogFormVisible,
+      dialogStatus,
+      downloadLoading,
+      rules,
+      sortOptions,
+      handleFilter,
+      handleFilterRefresh,
+      handleCreate,
+      handleUpdate,
+      createData,
+      updateData,
+      handleHide,
+      handleDelete,
+      handleDownload,
+      sortChange,
     };
   },
-  created() {
-    this.getList();
-    this.remoteMethod();
-  },
-  methods: {
-    // 学院框进行搜索
-    remoteMethod() {
-      this.listLoading = true;
-      fetchAcademyList()
-        .then((response) => {
-          this.academyList = response.data;
-        })
-        .then(() => {
-          this.listLoading = false;
-        });
-    },
-    getList() {
-      this.listLoading = true;
-      fetchReviewListAll(this.listQuery).then((response) => {
-        this.list = response.data.records;
-        this.total = response.data.total;
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false;
-        }, 1.5 * 1000);
-      });
-    },
-    handleFilter() {
-      // todo 先查学院，再查专业
-      this.listQuery.page = 1;
-      this.getList();
-    },
-    handleFilterRefresh() {
-      this.listQuery.page = 1;
-      this.listQuery.studentName = "";
-      this.getList();
-    },
-    sortChange(data) {
-      const { prop, order } = data;
-      if (prop === "id") {
-        this.sortByID(order);
-      }
-    },
-    sortByID(order) {
-      if (order === "ascending") {
-        this.listQuery.sort = "+id";
-      } else {
-        this.listQuery.sort = "-id";
-      }
-      this.handleFilter();
-    },
-    resetTemp() {
-      this.temp = {
-        id: undefined,
-        rank: undefined,
-        studentName: "",
-        studentCode: "",
-        subjectCode: "",
-        subjectName: "",
-        scorePolite: "",
-        scoreEnglish: "",
-        scoreProfessional1: "",
-        scoreProfessional2: "",
-        scoreTotal: "",
-        scoreTotalPublic: "",
-        scoreTotalProfessional: "",
-        remark: "",
-      };
-    },
-    handleCreate() {
-      this.resetTemp();
-      this.dialogStatus = "create";
-      this.dialogFormVisible = true;
-      this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
-    },
-    createData() {
-      this.$refs["dataForm"].validate((valid) => {
-        if (valid) {
-          insertOrUpdateReviewListAll(this.temp).then(() => {
-            this.list.unshift(this.temp);
-            this.dialogFormVisible = false;
-            this.$notify({
-              title: "成功",
-              message: "创建成功",
-              type: "success",
-              duration: 2000,
-            });
-          });
-        }
-      });
-    },
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row); // copy obj
-      this.dialogStatus = "update";
-      this.dialogFormVisible = true;
-      this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
-    },
-    updateData() {
-      this.$refs["dataForm"].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp);
-          insertOrUpdateReviewListAll(tempData).then(() => {
-            this.dialogFormVisible = false;
-            this.$notify({
-              title: "成功",
-              message: "更新成功",
-              type: "success",
-              duration: 2000,
-            });
-          });
-        }
-      });
-    },
-    handleHide(row, index) {
-      this.$notify({
-        title: "隐藏成功",
-        message: "刷新后再次出现",
-        type: "success",
-        duration: 2000,
-      });
-      this.list.splice(index, 1);
-    },
-    handleDelete(row, index) {
-      this.$notify({
-        title: "暂无删除",
-        message: "暂无删除",
-        type: "success",
-        duration: 2000,
-      });
-      this.list.splice(index, 1);
-    },
-    handleDownload() {
-      this.downloadLoading = true;
-      import("@/vendor/Export2Excel").then((excel) => {
-        // 设置文件头
-        const tHeader = [
-          "id",
-          "初试排名",
-          "学生姓名",
-          "学生编号",
-          "学科名称",
-          "政治",
-          "英语",
-          "专业课一",
-          "专业课二",
-          "初试总分",
-          "初试公共课总分",
-          "初试专业课总分",
-          "备注",
-        ];
-        // 设置文件需要的展示列
-        const filterVal = [
-          "id",
-          "rank",
-          "studentName",
-          "studentCode",
-          "subjectName",
-          "scorePolite",
-          "scoreEnglish",
-          "scoreProfessional1",
-          "scoreProfessional2",
-          "scoreTotal",
-          "scoreTotalPublic",
-          "scoreTotalProfessional",
-          "remark",
-        ];
-        const data = this.formatJson(filterVal);
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: excelName,
-        });
-        this.downloadLoading = false;
-      });
-    },
-    formatJson(filterVal) {
-      return this.list.map((v) =>
-        filterVal.map((j) => {
-          if (j === "timestamp") {
-            return parseTime(v[j]);
-          } else {
-            return v[j];
-          }
-        })
-      );
-    },
-  },
-};
+});
 </script>
+
+<style scoped>
+.app-container {
+  padding: 20px;
+}
+
+.filter-container {
+  margin-bottom: 20px;
+}
+
+.link-type {
+  cursor: pointer;
+  color: blue;
+}
+
+.pagination-container {
+  margin-top: 20px;
+}
+
+.dialog-footer {
+  text-align: right;
+}
+
+.fixed-width {
+  width: 200px;
+}
+
+.small-padding {
+  padding: 5px;
+}
+</style>
