@@ -52,6 +52,19 @@
           :value="item.key"
         />
       </el-select>
+      <el-select
+        v-model="listQuery.sort"
+        class="filter-item"
+        style="width: 140px"
+        @change="handleFilter"
+      >
+        <el-option
+          v-for="item in sortOptions"
+          :key="item.key"
+          :label="item.label"
+          :value="item.key"
+        />
+      </el-select>
       <el-button
         class="filter-item"
         icon="el-icon-search"
@@ -119,6 +132,7 @@
           <span class="link-type" @click="handleUpdate(row)">{{
             row.studentName
           }}</span>
+          <el-tag>{{ row.studentCode | subjectCodeFilter }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -165,6 +179,28 @@
       />
       <el-table-column
         v-if="showMoreInfo"
+        :label="'公共课总分'"
+        align="center"
+        sortable
+        width="120px"
+      >
+        <template v-slot="{ row }">
+          <span style="color: red">{{ row.scoreTotalPublic }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        v-if="showMoreInfo"
+        :label="'专业课总分'"
+        align="center"
+        sortable
+        width="120px"
+      >
+        <template v-slot="{ row }">
+          <span style="color: red">{{ row.scoreTotalProfessional }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        v-if="showMoreInfo"
         :label="'专业名称'"
         align="center"
         sortable
@@ -173,12 +209,36 @@
       />
       <el-table-column
         v-if="showMoreInfo"
+        :label="'专业代码'"
+        align="center"
+        sortable
+        width="110px"
+      >
+        <template v-slot="{ row }">
+          <span style="color: red">{{ row.subjectCode }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        v-if="showMoreInfo"
         :label="'考生编号'"
         align="center"
         sortable
         width="140px"
-        prop="studentCode"
-      />
+      >
+        <template v-slot="{ row }">
+          <span style="color: red">{{ row.studentCode }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        v-if="showMoreInfo"
+        :label="'备注'"
+        align="center"
+        width="110px"
+      >
+        <template v-slot="{ row }">
+          <span style="color: red">{{ row.remark }}</span>
+        </template>
+      </el-table-column>
       <el-table-column
         :label="actions"
         align="center"
@@ -291,6 +351,20 @@
             placeholder="请输入初试总分"
           />
         </el-form-item>
+        <el-form-item label="初试公共课总分" prop="scoreTotalPublic">
+          <el-input
+            v-model="temp.scoreTotalPublic"
+            :disabled="true"
+            placeholder="请输入初试公共课总分"
+          />
+        </el-form-item>
+        <el-form-item label="初试专业课总分" prop="scoreTotalProfessional">
+          <el-input
+            v-model="temp.scoreTotalProfessional"
+            :disabled="true"
+            placeholder="请输入初试专业课总分"
+          />
+        </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="temp.remark" placeholder="请输入备注" />
         </el-form-item>
@@ -311,11 +385,22 @@
 <script lang="ts">
 import { ref, onMounted, defineComponent } from "vue";
 import axios from "axios";
+import * as XLSX from "xlsx";
 
 const subjectCodeOptions = [
   { key: "100700", display_name: "药学" },
-  { key: "100701", display_name: "药学" },
-  // Add more options as needed
+  { key: "100701", display_name: "生物科学" },
+  // 其他专业代码
+];
+
+const isCheckedOptions = [
+  { key: "0", display_name: "录取" },
+  { key: "1", display_name: "落榜" },
+];
+
+const sortOptions = [
+  { key: "0", label: "高分优先" },
+  { key: "1", label: "低分优先" },
 ];
 
 export default defineComponent({
@@ -333,7 +418,7 @@ export default defineComponent({
       isChecked: undefined,
       studentName: "",
       academySearchInput: "",
-      sort: 0,
+      sort: "0",
     });
     const academyList = ref<any[]>([]);
     const showMoreInfo = ref(false);
@@ -349,6 +434,8 @@ export default defineComponent({
       scoreProfessional1: "",
       scoreProfessional2: "",
       scoreTotal: "",
+      scoreTotalPublic: "",
+      scoreTotalProfessional: "",
       remark: "",
     });
     const dialogFormVisible = ref(false);
@@ -357,11 +444,6 @@ export default defineComponent({
     const rules = {
       /* your validation rules here */
     };
-    const sortOptions = ref([
-      { key: "0", label: "默认排序" },
-      { key: "1", label: "按总分排序" },
-      { key: "2", label: "按初试排名排序" },
-    ]);
 
     const getList = async () => {
       listLoading.value = true;
@@ -369,8 +451,8 @@ export default defineComponent({
         const response = await axios.get("/dev-api/ReviewListAll/list", {
           params: listQuery.value,
         });
-        list.value = response.data.data.records; // 注意这里
-        total.value = response.data.data.total; // 注意这里
+        list.value = response.data.data.records;
+        total.value = response.data.data.total;
       } catch (error) {
         console.error(error);
       } finally {
@@ -418,7 +500,12 @@ export default defineComponent({
     };
 
     const handleDownload = async () => {
-      // Logic for downloading
+      downloadLoading.value = true;
+      const worksheet = XLSX.utils.json_to_sheet(list.value);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      XLSX.writeFile(workbook, "所有专业复试名单.xlsx");
+      downloadLoading.value = false;
     };
 
     const resetTemp = () => {
@@ -434,17 +521,15 @@ export default defineComponent({
         scoreProfessional1: "",
         scoreProfessional2: "",
         scoreTotal: "",
+        scoreTotalPublic: "",
+        scoreTotalProfessional: "",
         remark: "",
       };
     };
 
-    const sortChange = (data: any) => {
-      // Handle sorting
-    };
-
     onMounted(() => {
       getList();
-      // Fetch academy list etc.
+      // Fetch academy list, etc.
     });
 
     return {
@@ -455,13 +540,14 @@ export default defineComponent({
       listQuery,
       academyList,
       subjectCodeOptions,
+      isCheckedOptions,
+      sortOptions,
       showMoreInfo,
       temp,
       dialogFormVisible,
       dialogStatus,
       downloadLoading,
       rules,
-      sortOptions,
       handleFilter,
       handleFilterRefresh,
       handleCreate,
@@ -471,7 +557,6 @@ export default defineComponent({
       handleHide,
       handleDelete,
       handleDownload,
-      sortChange,
     };
   },
 });
@@ -489,10 +574,6 @@ export default defineComponent({
 .link-type {
   cursor: pointer;
   color: blue;
-}
-
-.pagination-container {
-  margin-top: 20px;
 }
 
 .dialog-footer {
