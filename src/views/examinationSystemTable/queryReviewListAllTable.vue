@@ -264,12 +264,15 @@
       </el-table-column>
     </el-table>
 
-    <custom-pagination
+    <el-pagination
       v-show="total > 0"
-      :limit.sync="listQuery.limit"
-      :page.sync="listQuery.page"
+      class="pagination"
+      :current-page.sync="listQuery.page"
+      :page-size.sync="listQuery.limit"
       :total="total"
-      @pagination="getList"
+      layout="total, prev, pager, next, sizes"
+      @size-change="handlePageSizeChange"
+      @current-change="handleCurrentChange"
     />
 
     <el-dialog
@@ -508,6 +511,17 @@ export default defineComponent({
       downloadLoading.value = false;
     };
 
+    const handleCurrentChange = (page: number) => {
+      listQuery.value.page = page;
+      getList();
+    };
+
+    const handlePageSizeChange = (size: number) => {
+      listQuery.value.limit = size;
+      listQuery.value.page = 1; // Reset to first page
+      getList();
+    };
+
     const resetTemp = () => {
       temp.value = {
         id: undefined,
@@ -557,6 +571,8 @@ export default defineComponent({
       handleHide,
       handleDelete,
       handleDownload,
+      handleCurrentChange,
+      handlePageSizeChange,
     };
   },
 });
@@ -586,5 +602,10 @@ export default defineComponent({
 
 .small-padding {
   padding: 5px;
+}
+
+.pagination {
+  margin-top: 20px;
+  text-align: right;
 }
 </style>
