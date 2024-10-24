@@ -123,11 +123,11 @@ export default defineMock([
           ],
         },
         {
-          path: "/university",
+          path: "/examinationSystemTable",
           component: "Layout",
-          name: "/university",
+          name: "/examinationSystemTable",
           meta: {
-            title: "page1",
+            title: "院校复试数据查询",
             icon: "api",
             hidden: false,
             roles: ["ADMIN"],
@@ -136,11 +136,11 @@ export default defineMock([
           },
           children: [
             {
-              path: "page1",
-              component: "university/Page1",
-              name: "page1",
+              path: "queryReviewListMaxismTable",
+              component: "examinationSystemTable/queryReviewListMaxismTable",
+              name: "queryReviewListMaxismTable",
               meta: {
-                title: "page1",
+                title: "马院复试名单-完成",
                 icon: "api",
                 hidden: false,
                 roles: ["ADMIN"],
@@ -150,39 +150,11 @@ export default defineMock([
               },
             },
             {
-              path: "page2",
-              component: "university/Page2",
-              name: "page2",
+              path: "queryReviewListAllTable",
+              component: "examinationSystemTable/queryReviewListAllTable",
+              name: "queryReviewListAllTable",
               meta: {
-                title: "page2",
-                icon: "api",
-                hidden: false,
-                roles: ["ADMIN"],
-                keepAlive: true,
-                alwaysShow: false,
-                params: null,
-              },
-            },
-            {
-              path: "page3",
-              component: "university/Page3",
-              name: "page3",
-              meta: {
-                title: "page3",
-                icon: "api",
-                hidden: false,
-                roles: ["ADMIN"],
-                keepAlive: true,
-                alwaysShow: false,
-                params: null,
-              },
-            },
-            {
-              path: "page4",
-              component: "university/Page4",
-              name: "page4",
-              meta: {
-                title: "page4",
+                title: "所有学院复试名单",
                 icon: "api",
                 hidden: false,
                 roles: ["ADMIN"],
@@ -193,6 +165,7 @@ export default defineMock([
             },
           ],
         },
+
         {
           path: "/doc",
           component: "Layout",
