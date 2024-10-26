@@ -67,7 +67,6 @@
       </el-select>
       <el-button
         class="filter-item"
-        icon="el-icon-search"
         type="primary"
         @click="handleFilter"
       >
@@ -75,16 +74,14 @@
       </el-button>
       <el-button
         class="filter-item"
-        icon="el-icon-refresh"
         type="primary"
         @click="handleFilterRefresh"
       >
         重置条件
       </el-button>
       <el-button
-        class="filter-item"
         disabled
-        icon="el-icon-edit"
+        class="filter-item"
         style="margin-left: 10px"
         type="primary"
         @click="handleCreate"
@@ -94,7 +91,6 @@
       <el-button
         :loading="downloadLoading"
         class="filter-item"
-        icon="el-icon-download"
         type="primary"
         @click="handleDownload"
       >
@@ -104,7 +100,7 @@
         v-model="showMoreInfo"
         class="filter-item"
         style="margin-left: 15px"
-        @change="tableKey += 1"
+        @change="tableKey++"
       >
         展示更多
       </el-checkbox>
@@ -127,12 +123,12 @@
         type="index"
         width="120px"
       />
-      <el-table-column :label="'考生姓名'" min-width="150px">
-        <template v-slot="{ row }">
-          <span class="link-type" @click="handleUpdate(row)">{{
-            row.studentName
-          }}</span>
-          <el-tag>{{ row.studentCode | subjectCodeFilter }}</el-tag>
+      <el-table-column label="考生姓名" min-width="150px">
+        <template #default="{ row }">
+          <span class="link-type" @click="handleUpdate(row)">
+            {{ row.studentName }}
+          </span>
+          <el-tag>{{ subjectCodeFilter(row.studentCode) }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -179,84 +175,89 @@
       />
       <el-table-column
         v-if="showMoreInfo"
-        :label="'公共课总分'"
+        label="公共课总分"
         align="center"
         sortable
         width="120px"
       >
-        <template v-slot="{ row }">
+        <template #default="{ row }">
           <span style="color: red">{{ row.scoreTotalPublic }}</span>
         </template>
       </el-table-column>
       <el-table-column
         v-if="showMoreInfo"
-        :label="'专业课总分'"
+        label="专业课总分"
         align="center"
         sortable
         width="120px"
       >
-        <template v-slot="{ row }">
+        <template #default="{ row }">
           <span style="color: red">{{ row.scoreTotalProfessional }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        v-if="showMoreInfo"
-        :label="'专业名称'"
         align="center"
+        label="专业名称"
+        prop="subjectName"
         sortable
         width="120px"
-        prop="subjectName"
       />
       <el-table-column
         v-if="showMoreInfo"
-        :label="'专业代码'"
+        label="专业代码"
         align="center"
         sortable
         width="110px"
       >
-        <template v-slot="{ row }">
+        <template #default="{ row }">
           <span style="color: red">{{ row.subjectCode }}</span>
         </template>
       </el-table-column>
       <el-table-column
         v-if="showMoreInfo"
-        :label="'考生编号'"
+        label="考生编号"
         align="center"
         sortable
         width="140px"
       >
-        <template v-slot="{ row }">
+        <template #default="{ row }">
           <span style="color: red">{{ row.studentCode }}</span>
         </template>
       </el-table-column>
       <el-table-column
         v-if="showMoreInfo"
-        :label="'备注'"
+        label="显示备注"
         align="center"
         width="110px"
       >
-        <template v-slot="{ row }">
+        <template #default="{ row }">
           <span style="color: red">{{ row.remark }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        :label="actions"
+        label="操作"
         align="center"
         class-name="small-padding fixed-width"
         width="280px"
       >
-        <template v-slot="{ row }">
-          <el-button size="mini" type="primary" @click="handleUpdate(row)">
+        <template #default="{ row, $index }">
+          <el-button size="small" type="primary" @click="handleUpdate(row)">
             编辑
           </el-button>
-          <el-button size="mini" type="default" @click="handleHide(row)">
+          <el-button
+            v-if="row.status != 'deleted'"
+            size="small"
+            type="default"
+            @click="handleHide(row, $index)"
+          >
             隐藏
           </el-button>
           <el-button
+            v-if="row.status != 'deleted'"
             disabled
-            size="mini"
+            size="small"
             type="danger"
-            @click="handleDelete(row)"
+            @click="handleDelete(row, $index)"
           >
             删除
           </el-button>
@@ -266,19 +267,13 @@
 
     <el-pagination
       v-show="total > 0"
-      class="pagination"
-      :current-page.sync="listQuery.page"
-      :page-size.sync="listQuery.limit"
       :total="total"
-      layout="total, prev, pager, next, sizes"
-      @size-change="handlePageSizeChange"
-      @current-change="handleCurrentChange"
+      v-model:current-page="listQuery.page"
+      v-model:page-size="listQuery.limit"
+      @current-change="getList"
     />
 
-    <el-dialog
-      :title="dialogStatus === 'create' ? '添加' : '编辑'"
-      :visible.sync="dialogFormVisible"
-    >
+    <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible">
       <el-form
         ref="dataForm"
         :model="temp"
@@ -290,42 +285,42 @@
         <el-form-item label="复试线主键" prop="id">
           <el-input
             v-model="temp.id"
-            :disabled="true"
+            disabled
             placeholder="请输入复试线主键"
           />
         </el-form-item>
         <el-form-item label="初试排名" prop="rank">
           <el-input
             v-model="temp.rank"
-            :disabled="true"
+            disabled
             placeholder="请输入初试排名"
           />
         </el-form-item>
         <el-form-item label="学生姓名" prop="studentName">
           <el-input
             v-model="temp.studentName"
-            :disabled="true"
+            disabled
             placeholder="请输入学生姓名"
           />
         </el-form-item>
         <el-form-item label="学生编号" prop="studentCode">
           <el-input
             v-model="temp.studentCode"
-            :disabled="true"
+            disabled
             placeholder="请输入学生编号"
           />
         </el-form-item>
         <el-form-item label="学科代码" prop="subjectCode">
           <el-input
             v-model="temp.subjectCode"
-            :disabled="true"
+            disabled
             placeholder="请输入学科代码"
           />
         </el-form-item>
         <el-form-item label="学科名称" prop="subjectName">
           <el-input
             v-model="temp.subjectName"
-            :disabled="true"
+            disabled
             placeholder="请输入学科名称"
           />
         </el-form-item>
@@ -350,21 +345,21 @@
         <el-form-item label="初试总分" prop="scoreTotal">
           <el-input
             v-model="temp.scoreTotal"
-            :disabled="true"
+            disabled
             placeholder="请输入初试总分"
           />
         </el-form-item>
         <el-form-item label="初试公共课总分" prop="scoreTotalPublic">
           <el-input
             v-model="temp.scoreTotalPublic"
-            :disabled="true"
+            disabled
             placeholder="请输入初试公共课总分"
           />
         </el-form-item>
         <el-form-item label="初试专业课总分" prop="scoreTotalProfessional">
           <el-input
             v-model="temp.scoreTotalProfessional"
-            :disabled="true"
+            disabled
             placeholder="请输入初试专业课总分"
           />
         </el-form-item>
@@ -372,196 +367,238 @@
           <el-input v-model="temp.remark" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button
-          type="primary"
-          @click="dialogStatus === 'create' ? createData() : updateData()"
-        >
-          {{ dialogStatus === "create" ? "添加" : "编辑" }}
-        </el-button>
-      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取消</el-button>
+          <el-button type="primary" @click="dialogStatus === 'create' ? createData() : updateData()">
+            确认
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <el-dialog v-model="dialogPvVisible" title="Reading statistics">
+      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
+        <el-table-column label="Channel" prop="key" />
+        <el-table-column label="Pv" prop="pv" />
+      </el-table>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button type="primary" @click="dialogPvVisible = false">确认</el-button>
+        </span>
+      </template>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
-import { ref, onMounted, defineComponent } from "vue";
-import axios from "axios";
-import * as XLSX from "xlsx";
-
-const subjectCodeOptions = [
-  { key: "100700", display_name: "药学" },
-  { key: "100701", display_name: "生物科学" },
-  // 其他专业代码
-];
-
-const isCheckedOptions = [
-  { key: "0", display_name: "录取" },
-  { key: "1", display_name: "落榜" },
-];
-
-const sortOptions = [
-  { key: "0", label: "高分优先" },
-  { key: "1", label: "低分优先" },
-];
+import { defineComponent, ref, reactive, onMounted, toRefs } from 'vue';
+import { ElMessage } from 'element-plus';
+import axios from 'axios';
 
 export default defineComponent({
-  name: "QueryReviewListAllTable",
-
+  name: 'QueryReviewListAllTable',
   setup() {
-    const tableKey = ref(0);
-    const list = ref<any[]>([]);
-    const total = ref(0);
-    const listLoading = ref(true);
-    const listQuery = ref({
-      page: 1,
-      limit: 10,
-      subjectCode: "",
-      isChecked: undefined,
-      studentName: "",
-      academySearchInput: "",
-      sort: "0",
+    const state = reactive({
+      tableKey: 0,
+      list: [] as any[],
+      total: 0,
+      listLoading: true,
+      listQuery: {
+        page: 1,
+        limit: 10,
+        subjectCode: '',
+        isChecked: undefined as string | undefined,
+        studentName: undefined as string | undefined,
+        type: undefined as string | undefined,
+        academySearchInput: '',
+        sort: '0'
+      },
+      showMoreInfo: false,
+      temp: {
+        id: undefined,
+        rank: undefined,
+        studentName: '',
+        studentCode: '',
+        subjectCode: '',
+        subjectName: '',
+        scorePolite: '',
+        scoreEnglish: '',
+        scoreProfessional1: '',
+        scoreProfessional2: '',
+        scoreTotal: '',
+        scoreTotalPublic: '',
+        scoreTotalProfessional: '',
+        remark: ''
+      },
+      dialogFormVisible: false,
+      dialogStatus: '',
+      dialogPvVisible: false,
+      pvData: [] as any[],
+      downloadLoading: false
     });
-    const academyList = ref<any[]>([]);
-    const showMoreInfo = ref(false);
-    const temp = ref({
-      id: undefined,
-      rank: undefined,
-      studentName: "",
-      studentCode: "",
-      subjectCode: "",
-      subjectName: "",
-      scorePolite: "",
-      scoreEnglish: "",
-      scoreProfessional1: "",
-      scoreProfessional2: "",
-      scoreTotal: "",
-      scoreTotalPublic: "",
-      scoreTotalProfessional: "",
-      remark: "",
-    });
-    const dialogFormVisible = ref(false);
-    const dialogStatus = ref("");
-    const downloadLoading = ref(false);
+
     const rules = {
-      /* your validation rules here */
+      type: [{ required: true, message: 'type is required', trigger: 'change' }],
+      studentName: [{ required: true, message: 'studentName is required', trigger: 'blur' }]
     };
 
+    const subjectCodeOptions = [
+      { key: '030500', display_name: '马克思主义理论' },
+      { key: '071200', display_name: '科学技术史' },
+      { key: '010108', display_name: '科学技术哲学' }
+    ];
+
+    const isCheckedOptions = [
+      { key: '0', display_name: '录取' },
+      { key: '1', display_name: '落榜' }
+    ];
+
+    const sortOptions = [
+      { label: '高分优先', key: '0' },
+      { label: '低分优先', key: '1' }
+    ];
+
+    const academyList = [
+      { label: '学院1', key: '0' },
+      { label: '学院2', key: '1' }
+    ];
+
+    const textMap = {
+      update: '编辑',
+      create: '创建'
+    };
+
+    const subjectCodeKeyValue = subjectCodeOptions.reduce((acc: Record<string, string>, cur) => {
+      acc[cur.key] = cur.display_name;
+      return acc;
+    }, {});
+    const subjectCodeFilter = (code: string) => {
+      return subjectCodeKeyValue[code] || code;
+    };
+
+
+
     const getList = async () => {
-      listLoading.value = true;
+      state.listLoading = true;
       try {
-        const response = await axios.get("/dev-api/ReviewListAll/list", {
-          params: listQuery.value,
+        const response = await axios.get('/dev-api/ReviewListAll/list', {
+          params: {
+            page: state.listQuery.page,
+            limit: state.listQuery.limit,
+            studentName: state.listQuery.studentName,
+            isChecked: state.listQuery.isChecked,
+            subjectCode: state.listQuery.subjectCode,
+            sort: state.listQuery.sort
+          }
         });
-        list.value = response.data.data.records;
-        total.value = response.data.data.total;
+
+        // 确保数据在正确的路径上
+        if (response.data.code === 20000) {
+          state.list = response.data.data.records;
+          state.total = response.data.data.total;
+        } else {
+          ElMessage.error(`获取数据失败: ${response.data.msg || '未知错误'}`);
+        }
       } catch (error) {
-        console.error(error);
+        ElMessage.error(`获取数据失败: ${error.message}`);
       } finally {
-        listLoading.value = false;
+        state.listLoading = false;
       }
     };
 
+
     const handleFilter = () => {
-      listQuery.value.page = 1;
+      state.listQuery.page = 1;
       getList();
     };
 
     const handleFilterRefresh = () => {
-      listQuery.value.page = 1;
-      listQuery.value.studentName = "";
+      state.listQuery.page = 1;
+      state.listQuery.studentName = '';
       getList();
+    };
+
+    const sortChange = (data: any) => {
+      const { prop, order } = data;
+      if (prop === 'id') {
+        state.listQuery.sort = order === 'ascending' ? '+id' : '-id';
+        handleFilter();
+      }
     };
 
     const handleCreate = () => {
       resetTemp();
-      dialogStatus.value = "create";
-      dialogFormVisible.value = true;
+      state.dialogStatus = 'create';
+      state.dialogFormVisible = true;
+    };
+
+    const createData = () => {
+      // handle create
+      state.dialogFormVisible = false;
+      ElMessage.success('创建成功');
     };
 
     const handleUpdate = (row: any) => {
-      temp.value = Object.assign({}, row);
-      dialogStatus.value = "update";
-      dialogFormVisible.value = true;
+      Object.assign(state.temp, row);
+      state.dialogStatus = 'update';
+      state.dialogFormVisible = true;
     };
 
-    const createData = async () => {
-      // Logic for creating data
+    const updateData = () => {
+      // handle update
+      state.dialogFormVisible = false;
+      ElMessage.success('更新成功');
     };
 
-    const updateData = async () => {
-      // Logic for updating data
+    const handleHide = (row: any, index: number) => {
+      ElMessage.success('隐藏成功');
+      state.list.splice(index, 1);
     };
 
-    const handleHide = (row: any) => {
-      // Logic for hiding
+    const handleDelete = (row: any, index: number) => {
+      ElMessage.success('删除成功');
+      state.list.splice(index, 1);
     };
 
-    const handleDelete = (row: any) => {
-      // Logic for deleting
-    };
-
-    const handleDownload = async () => {
-      downloadLoading.value = true;
-      const worksheet = XLSX.utils.json_to_sheet(list.value);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-      XLSX.writeFile(workbook, "所有专业复试名单.xlsx");
-      downloadLoading.value = false;
-    };
-
-    const handleCurrentChange = (page: number) => {
-      listQuery.value.page = page;
-      getList();
-    };
-
-    const handlePageSizeChange = (size: number) => {
-      listQuery.value.limit = size;
-      listQuery.value.page = 1; // Reset to first page
-      getList();
+    const handleDownload = () => {
+      state.downloadLoading = true;
+      // handle download logic here
+      state.downloadLoading = false;
     };
 
     const resetTemp = () => {
-      temp.value = {
+      Object.assign(state.temp, {
         id: undefined,
         rank: undefined,
-        studentName: "",
-        studentCode: "",
-        subjectCode: "",
-        subjectName: "",
-        scorePolite: "",
-        scoreEnglish: "",
-        scoreProfessional1: "",
-        scoreProfessional2: "",
-        scoreTotal: "",
-        scoreTotalPublic: "",
-        scoreTotalProfessional: "",
-        remark: "",
-      };
+        studentName: '',
+        studentCode: '',
+        subjectCode: '',
+        subjectName: '',
+        scorePolite: '',
+        scoreEnglish: '',
+        scoreProfessional1: '',
+        scoreProfessional2: '',
+        scoreTotal: '',
+        scoreTotalPublic: '',
+        scoreTotalProfessional: '',
+        remark: ''
+      });
     };
 
     onMounted(() => {
       getList();
-      // Fetch academy list, etc.
     });
 
     return {
-      tableKey,
-      list,
-      total,
-      listLoading,
-      listQuery,
-      academyList,
-      subjectCodeOptions,
-      isCheckedOptions,
-      sortOptions,
-      showMoreInfo,
-      temp,
-      dialogFormVisible,
-      dialogStatus,
-      downloadLoading,
+      ...toRefs(state),
       rules,
+      isCheckedOptions,
+      subjectCodeOptions,
+      sortOptions,
+      academyList,
+      textMap,
+      subjectCodeFilter,
       handleFilter,
       handleFilterRefresh,
       handleCreate,
@@ -571,10 +608,9 @@ export default defineComponent({
       handleHide,
       handleDelete,
       handleDownload,
-      handleCurrentChange,
-      handlePageSizeChange,
+      sortChange
     };
-  },
+  }
 });
 </script>
 
@@ -584,28 +620,16 @@ export default defineComponent({
 }
 
 .filter-container {
+  display: flex;
+  flex-wrap: wrap;
   margin-bottom: 20px;
 }
 
-.link-type {
-  cursor: pointer;
-  color: blue;
+.filter-item {
+  margin-right: 20px;
 }
 
 .dialog-footer {
-  text-align: right;
-}
-
-.fixed-width {
-  width: 200px;
-}
-
-.small-padding {
-  padding: 5px;
-}
-
-.pagination {
-  margin-top: 20px;
   text-align: right;
 }
 </style>
