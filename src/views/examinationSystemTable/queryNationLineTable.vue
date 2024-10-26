@@ -373,10 +373,6 @@
 </template>
 
 <script>
-import { fetchNationLine, insertOrUpdateNationLine } from "@/api/examination";
-import waves from "@/directive/waves"; // waves directive
-import { parseTime } from "@/utils";
-import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
 // 专业代码
 const degreeTypeOptions = [
   { key: "Academic", display_name: "学硕" },

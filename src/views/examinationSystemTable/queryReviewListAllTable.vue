@@ -270,7 +270,8 @@
       :total="total"
       v-model:current-page="listQuery.page"
       v-model:page-size="listQuery.limit"
-      @current-change="getList"
+      @current-change="handleCurrentChange"
+      layout="total, sizes, prev, pager, next, jumper"
     />
 
     <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible">
@@ -477,8 +478,6 @@ export default defineComponent({
       return subjectCodeKeyValue[code] || code;
     };
 
-
-
     const getList = async () => {
       state.listLoading = true;
       try {
@@ -493,7 +492,6 @@ export default defineComponent({
           }
         });
 
-        // 确保数据在正确的路径上
         if (response.data.code === 20000) {
           state.list = response.data.data.records;
           state.total = response.data.data.total;
@@ -507,7 +505,10 @@ export default defineComponent({
       }
     };
 
-
+    const handleCurrentChange = (val: number) => {
+      state.listQuery.page = val;
+      getList();
+    };
     const handleFilter = () => {
       state.listQuery.page = 1;
       getList();
@@ -533,10 +534,19 @@ export default defineComponent({
       state.dialogFormVisible = true;
     };
 
-    const createData = () => {
-      // handle create
-      state.dialogFormVisible = false;
-      ElMessage.success('创建成功');
+    const createData = async () => {
+      try {
+        const response = await axios.post('/dev-api/ReviewListAll/insertOrUpdate', state.temp);
+        if (response.data.code === 20000) {
+          state.dialogFormVisible = false;
+          ElMessage.success('创建成功');
+          getList(); // Refresh list
+        } else {
+          ElMessage.error(`创建失败: ${response.data.msg || '未知错误'}`);
+        }
+      } catch (error) {
+        ElMessage.error(`创建失败: ${error.message}`);
+      }
     };
 
     const handleUpdate = (row: any) => {
@@ -545,10 +555,19 @@ export default defineComponent({
       state.dialogFormVisible = true;
     };
 
-    const updateData = () => {
-      // handle update
-      state.dialogFormVisible = false;
-      ElMessage.success('更新成功');
+    const updateData = async () => {
+      try {
+        const response = await axios.post('/dev-api/ReviewListAll/insertOrUpdate', state.temp);
+        if (response.data.code === 20000) {
+          state.dialogFormVisible = false;
+          ElMessage.success('更新成功');
+          getList(); // Refresh list
+        } else {
+          ElMessage.error(`更新失败: ${response.data.msg || '未知错误'}`);
+        }
+      } catch (error) {
+        ElMessage.error(`更新失败: ${error.message}`);
+      }
     };
 
     const handleHide = (row: any, index: number) => {
@@ -598,6 +617,8 @@ export default defineComponent({
       sortOptions,
       academyList,
       textMap,
+      getList,
+      handleCurrentChange,
       subjectCodeFilter,
       handleFilter,
       handleFilterRefresh,
@@ -613,6 +634,7 @@ export default defineComponent({
   }
 });
 </script>
+
 
 <style scoped>
 .app-container {
