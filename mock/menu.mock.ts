@@ -168,7 +168,7 @@ export default defineMock([
               component: "examinationSystemTable/queryNationLineTable",
               name: "queryNationLineTable",
               meta: {
-                title: "查询国家线-完成",
+                title: "查询国家线",
                 icon: "api",
                 hidden: false,
                 roles: ["ADMIN"],
@@ -182,7 +182,7 @@ export default defineMock([
               component: "examinationSystemTable/queryCollegeLineTable",
               name: "queryCollegeLineTable",
               meta: {
-                title: "查询校线-完成",
+                title: "查询校线",
                 icon: "api",
                 hidden: false,
                 roles: ["ADMIN"],

@@ -3,25 +3,15 @@
     <div class="filter-container">
       <el-input
         v-model="listQuery.subjectClass"
-        :placeholder="'大类名称'"
+        placeholder="大类名称"
         class="filter-item"
         clearable
         style="width: 200px"
-        @keyup.enter.native="handleFilter"
+        @keyup.enter="handleFilter"
       />
-      <!--<el-select-->
-      <!--  v-model = "listQuery.studentClass"-->
-      <!--  :placeholder = "'A/B地区'"-->
-      <!--  clearable-->
-      <!--  style = "width: 90px"-->
-      <!--  class = "filter-item"-->
-      <!--&gt;-->
-      <!--  <el-option v-for = "item in studentClassOptions" :key = "item.key" :label = "item.display_name"-->
-      <!--             :value = "item.key"/>-->
-      <!--</el-select>-->
       <el-select
         v-model="listQuery.degreeType"
-        :placeholder="'学位类型'"
+        placeholder="学位类型"
         class="filter-item"
         clearable
         style="width: 130px"
@@ -29,7 +19,7 @@
         <el-option
           v-for="item in degreeTypeOptions"
           :key="item.key"
-          :label="item.display_name + '(' + item.key + ')'"
+          :label="`${item.display_name} (${item.key})`"
           :value="item.key"
         />
       </el-select>
@@ -46,53 +36,10 @@
           :value="item.key"
         />
       </el-select>
-      <el-button
-        v-waves
-        class="filter-item"
-        icon="el-icon-search"
-        type="primary"
-        @click="handleFilter"
-      >
-        {{ "搜索" }}
-      </el-button>
-      <el-button
-        v-waves
-        class="filter-item"
-        icon="el-icon-search"
-        type="primary"
-        @click="handleFilterRefresh"
-      >
-        <!--todo 没有设置清空表单的方法-->
-        {{ "重置条件" }}
-      </el-button>
-      <el-button
-        class="filter-item"
-        disabled
-        icon="el-icon-edit"
-        style="margin-left: 10px"
-        type="primary"
-        @click="handleCreate"
-      >
-        {{ "添加" }}
-      </el-button>
-      <el-button
-        v-waves
-        :loading="downloadLoading"
-        class="filter-item"
-        icon="el-icon-download"
-        type="primary"
-        @click="handleDownload"
-      >
-        {{ "导出" }}
-      </el-button>
-      <el-checkbox
-        v-model="showMoreInfo"
-        class="filter-item"
-        style="margin-left: 15px"
-        @change="tableKey = tableKey + 1"
-      >
-        {{ "展示更多" }}
-      </el-checkbox>
+      <el-button icon="el-icon-search" type="primary" @click="handleFilter">搜索</el-button>
+      <el-button icon="el-icon-refresh" type="primary" @click="handleFilterRefresh">重置条件</el-button>
+      <el-button icon="el-icon-download" :loading="downloadLoading" type="primary" @click="handleDownload">导出</el-button>
+      <el-checkbox v-model="showMoreInfo" @change="tableKey += 1" style="margin-left: 15px">展示更多</el-checkbox>
     </div>
 
     <el-table
@@ -100,276 +47,62 @@
       v-loading="listLoading"
       :data="list"
       border
-      fit
       highlight-current-row
       style="width: 100%"
       @sort-change="sortChange"
     >
-      <el-table-column
-        align="center"
-        label="序号"
-        sortable
-        type="index"
-        width="120px"
-      />
-      <el-table-column :label="'学科大类'" min-width="150px">
-        <template slot-scope="{ row }">
-          <span class="link-type" @click="handleUpdate(row)">{{
-            row.subjectClass
-          }}</span>
-          <!--todo 这里放专业-->
-          <el-tag>{{ row.studentClass | studentClassFilter }}</el-tag>
+      <el-table-column type="index" align="center" label="序号" width="120px" />
+      <el-table-column label="学科大类" min-width="150px">
+        <template #default="{ row }">
+          <span class="link-type" @click="handleUpdate(row)">
+            {{ row.subjectClass }}
+          </span>
+          <el-tag>{{ studentClassFilter(row.studentClass) }}</el-tag>
         </template>
       </el-table-column>
-      <!--==========================================================================-->
-      <el-table-column
-        align="center"
-        label="政治"
-        prop="scorePolite"
-        sortable
-        width="80px"
-      />
-      <el-table-column
-        align="center"
-        label="英语"
-        prop="scoreEnglish"
-        sortable
-        width="80px"
-      />
-      <el-table-column
-        align="center"
-        label="专业课一"
-        prop="scoreProfessional1"
-        sortable
-        width="120px"
-      />
-      <el-table-column
-        align="center"
-        label="专业课二"
-        prop="scoreProfessional2"
-        sortable
-        width="120px"
-      />
-      <el-table-column
-        align="center"
-        label="总分"
-        prop="scoreTotal"
-        sortable
-        width="80px"
-      />
-      <!--<el-table-column-->
-      <!--  prop = "rank"-->
-      <!--  label = "学科类型"-->
-      <!--  width = "120px"-->
-      <!--  sortable-->
-      <!--  align = "center"-->
-      <!--/>-->
-      <el-table-column
-        v-if="showMoreInfo"
-        :label="'公共课总分'"
-        align="center"
-        sortable
-        width="120px"
-      >
-        <template slot-scope="{ row }">
+      <el-table-column align="center" label="政治校线" prop="scorePolite" width="80px" />
+      <el-table-column align="center" label="英语校线" prop="scoreEnglish" width="80px" />
+      <el-table-column align="center" label="专业课一校线" prop="scoreProfessional1" width="120px" />
+      <el-table-column align="center" label="专业课二校线" prop="scoreProfessional2" width="120px" />
+      <el-table-column align="center" label="总分校线" prop="scoreTotal" width="80px" />
+      <el-table-column v-if="showMoreInfo" align="center" label="公共课总分校线" width="120px">
+        <template #default="{ row }">
           <span style="color: red">{{ row.scoreTotalPublic }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        v-if="showMoreInfo"
-        :label="'专业课总分'"
-        align="center"
-        sortable
-        width="120px"
-      >
-        <template slot-scope="{ row }">
+      <el-table-column v-if="showMoreInfo" align="center" label="专业课总分校线" width="120px">
+        <template #default="{ row }">
           <span style="color: red">{{ row.scoreTotalProfessional }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        label="学硕/专硕"
-        prop="degreeType"
-        sortable
-        width="120px"
-      >
-        <template slot-scope="{ row }">
-          <el-tag :type="row.degreeType | degreeTypeFilter">
+      <el-table-column align="center" label="学硕/专硕" prop="degreeType" width="120px">
+        <template #default="{ row }">
+          <el-tag :type="degreeTypeFilter(row.degreeType)">
             {{ row.degreeType }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column
-        v-if="showMoreInfo"
-        :label="'学科编号'"
-        align="center"
-        sortable
-        width="110px"
-      >
-        <template slot-scope="{ row }">
-          <span style="color: red">{{ row.subjectCode }}</span>
-        </template>
-      </el-table-column>
-      <!--==========================================================================-->
-      <!--<el-table-column v-if = "showMoreInfo" :label = "'显示备注'" width = "110px" align = "center">-->
-      <!--  <template slot-scope = "{row}">-->
-      <!--    <span style = "color:red;">{{ row.remark }}</span>-->
-      <!--  </template>-->
-      <!--</el-table-column>-->
-      <el-table-column
-        :label="$t('table.actions')"
-        align="center"
-        class-name="small-padding fixed-width"
-        width="280px"
-      >
-        <template slot-scope="{ row, $index }">
-          <el-button size="mini" type="primary" @click="handleUpdate(row)">
-            {{ $t("table.edit") }}
-          </el-button>
-          <el-button
-            v-if="row.status != 'deleted'"
-            size="mini"
-            type="default"
-            @click="handleHide(row, $index)"
-          >
-            {{ "隐藏" }}
-          </el-button>
-          <el-button
-            v-if="row.status != 'deleted'"
-            disabled
-            size="mini"
-            type="danger"
-            @click="handleDelete(row, $index)"
-          >
-            {{ "删除" }}
-          </el-button>
-        </template>
-      </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :limit.sync="listQuery.limit"
-      :page.sync="listQuery.page"
+    <el-pagination
+      v-if="total > 0"
+      background
+      layout="total, sizes, prev, pager, next, jumper"
       :total="total"
-      @pagination="getList"
+      :page-size="listQuery.limit"
+      :current-page="listQuery.page"
+      @current-change="handlePageChange"
+      @size-change="handleSizeChange"
     />
-    <!--新增和编辑的弹窗-->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form
-        ref="dataForm"
-        :model="temp"
-        :rules="rules"
-        label-position="left"
-        label-width="140px"
-        style="width: 400px; margin-left: 50px"
-      >
-        <el-form-item label="院线主键" prop="id">
-          <el-input
-            v-model="temp.id"
-            disabled
-            placeholder="请输入院线主键 primary key"
-          />
-        </el-form-item>
-        <el-form-item label="学科类型" prop="subjectClass">
-          <el-input
-            v-model="temp.subjectClass"
-            disabled
-            placeholder="请输入学科类型"
-          />
-        </el-form-item>
-        <el-form-item label="学硕专硕" prop="degreeType">
-          <el-input
-            v-model="temp.degreeType"
-            disabled
-            placeholder="请输入学硕专硕"
-          />
-        </el-form-item>
-        <el-form-item label="政治校线" prop="scorePolite">
-          <el-input
-            v-model="temp.scorePolite"
-            disabled
-            placeholder="请输入政治校线"
-          />
-        </el-form-item>
-        <el-form-item label="英语校线" prop="scoreEnglish">
-          <el-input
-            v-model="temp.scoreEnglish"
-            disabled
-            placeholder="请输入英语校线"
-          />
-        </el-form-item>
-        <el-form-item label="专业课一校线" prop="scoreProfessional1">
-          <el-input
-            v-model="temp.scoreProfessional1"
-            disabled
-            placeholder="请输入专业课一校线"
-          />
-        </el-form-item>
-        <el-form-item label="专业课二校线" prop="scoreProfessional2">
-          <el-input
-            v-model="temp.scoreProfessional2"
-            disabled
-            placeholder="请输入专业课二校线"
-          />
-        </el-form-item>
-        <el-form-item label="总分校线" prop="scoreTotal">
-          <el-input
-            v-model="temp.scoreTotal"
-            disabled
-            placeholder="请输入总分校线"
-          />
-        </el-form-item>
-        <el-form-item label="公共课总分校线" prop="scoreTotalPublic">
-          <el-input
-            v-model="temp.scoreTotalPublic"
-            disabled
-            placeholder="请输入公共课总分校线"
-          />
-        </el-form-item>
-        <el-form-item label="专业课总分校线" prop="scoreTotalProfessional">
-          <el-input
-            v-model="temp.scoreTotalProfessional"
-            disabled
-            placeholder="请输入专业课总分校线"
-          />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          {{ $t("table.cancel") }}
-        </el-button>
-        <el-button
-          type="primary"
-          @click="dialogStatus === 'create' ? createData() : updateData()"
-        >
-          {{ $t("table.confirm") }}
-        </el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table
-        :data="pvData"
-        border
-        fit
-        highlight-current-row
-        style="width: 100%"
-      >
-        <el-table-column label="Channel" prop="key" />
-        <el-table-column label="Pv" prop="pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">{{
-          $t("table.confirm")
-        }}</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
-<script>
-// 专业代码
+<script lang="ts">
+import { defineComponent, ref, reactive, onMounted } from "vue";
+import { ElMessage } from "element-plus";
+import axios from "axios";
+import * as XLSX from "xlsx";
+
 const degreeTypeOptions = [
   { key: "Academic", display_name: "学硕" },
   { key: "Professional", display_name: "专硕" },
@@ -378,269 +111,148 @@ const studentClassOptions = [
   { key: "A", display_name: "A类" },
   { key: "B", display_name: "B类" },
 ];
-
-// arr to obj, such as { 030500 : "马克思主义理论", 071200 : "科学技术史" }
-// const degreeTypeKeyValue = degreeTypeOptions.reduce((acc, cur) => {
-//   acc[cur.key] = cur.display_name
-//   return acc
-// }, {})
-
-const studentClassKeyValue = studentClassOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name;
-  return acc;
-}, {});
-
+const sortOptions = [
+  { key: "0", label: "高分优先" },
+  { key: "1", label: "低分优先" },
+];
 const excelName = "校线分数表";
 
-export default {
+export default defineComponent({
   name: "QueryCollegeLineTable",
-  components: { Pagination },
-  directives: { waves },
-  filters: {
-    degreeTypeFilter(status) {
-      const statusMap = {
-        Academic: "success",
-        Professional: "info",
-      };
-      return statusMap[status];
-    },
-    studentClassFilter(type) {
-      return studentClassKeyValue[type];
-    },
-  },
-  data() {
+  setup() {
+    const listQuery = reactive({
+      page: 1,
+      limit: 10,
+      degreeType: "Academic",
+      subjectClass: "",
+      sort: "0",
+    });
+    const list = ref < any[] > ([]);
+    const total = ref(0);
+    const listLoading = ref(false);
+    const downloadLoading = ref(false);
+    const showMoreInfo = ref(false);
+    const tableKey = ref(0);
+    const temp = reactive({
+      id: undefined,
+      subjectClass: "",
+      degreeType: "",
+      scorePolite: "",
+      scoreEnglish: "",
+      scoreProfessional1: "",
+      scoreProfessional2: "",
+      scoreTotal: "",
+      scoreTotalPublic: "",
+      scoreTotalProfessional: "",
+    });
+
+    const getList = () => {
+      listLoading.value = true;
+      axios.get("/dev-api/CollegeLine/list", { params: listQuery }).then((response) => {
+        const { records, total: totalRecords } = response.data.data;
+        list.value = records;
+        total.value = totalRecords;
+        listLoading.value = false;
+      });
+    };
+
+    const handleFilter = () => {
+      listQuery.page = 1;
+      getList();
+    };
+
+    const handleFilterRefresh = () => {
+      listQuery.page = 1;
+      listQuery.subjectClass = "";
+      getList();
+    };
+
+    const handlePageChange = (page: number) => {
+      listQuery.page = page;
+      getList();
+    };
+
+    const handleSizeChange = (size: number) => {
+      listQuery.limit = size;
+      listQuery.page = 1;
+      getList();
+    };
+
+    const handleDownload = () => {
+      downloadLoading.value = true;
+      const exportData = list.value.map((item) => ({
+        "院线主键": item.id,
+        "学科类型": item.subjectClass,
+        "学硕/专硕": item.degreeType,
+        "政治校线": item.scorePolite,
+        "英语校线": item.scoreEnglish,
+        "专业课一校线": item.scoreProfessional1,
+        "专业课二校线": item.scoreProfessional2,
+        "总分校线": item.scoreTotal,
+        "公共课总分校线": item.scoreTotalPublic,
+        "专业课总分校线": item.scoreTotalProfessional,
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "校线分数表");
+      XLSX.writeFile(wb, `${excelName}.xlsx`);
+      downloadLoading.value = false;
+    };
+
+    const studentClassFilter = (type: string) =>
+      studentClassOptions.find((item) => item.key === type)?.display_name || "";
+
+    const degreeTypeFilter = (type: string) =>
+      type === "Academic" ? "success" : "info";
+
+    const sortChange = ({ prop, order }: { prop: string; order: string }) => {
+      if (prop === "id") {
+        listQuery.sort = order === "ascending" ? "+id" : "-id";
+      }
+      handleFilter();
+    };
+
+    onMounted(getList);
+
     return {
-      tableKey: 0,
-      list: null,
-      total: 0,
-      listLoading: true,
-      listQuery: {
-        page: 1,
-        limit: 10,
-        degreeType: "Academic",
-        subjectClass: "",
-        sort: "0",
-      },
-      studentClassOptions,
+      listQuery,
+      list,
+      total,
+      listLoading,
+      downloadLoading,
+      showMoreInfo,
+      tableKey,
+      temp,
+      handleFilter,
+      handleFilterRefresh,
+      handlePageChange,
+      handleSizeChange,
+      handleDownload,
+      studentClassFilter,
+      degreeTypeFilter,
+      sortChange,
       degreeTypeOptions,
-      sortOptions: [
-        { label: "高分优先", key: "0" },
-        { label: "低分优先", key: "1" },
-      ],
-      statusOptions: ["published", "draft", "deleted"],
-      showMoreInfo: false,
-      temp: {
-        id: undefined,
-        subjectClass: undefined,
-        studentClass: "",
-        scorePolite: "",
-        scoreEnglish: "",
-        scoreProfessional1: "",
-        scoreProfessional2: "",
-        scoreTotal: "",
-        scoreTotalPublic: "",
-        scoreTotalProfessional: "",
-      },
-      dialogFormVisible: false,
-      dialogStatus: "",
-      textMap: {
-        update: "Edit",
-        create: "Create",
-      },
-      dialogPvVisible: false,
-      pvData: [],
-      rules: {
-        type: [
-          { required: true, message: "type is required", trigger: "change" },
-        ],
-        timestamp: [
-          {
-            type: "date",
-            required: true,
-            message: "timestamp is required",
-            trigger: "change",
-          },
-        ],
-        subjectClass: [
-          {
-            required: true,
-            message: "subjectClass is required",
-            trigger: "blur",
-          },
-        ],
-      },
-      downloadLoading: false,
+      sortOptions,
     };
   },
-  created() {
-    this.getList();
-  },
-  methods: {
-    getList() {
-      this.listLoading = true;
-      fetchCollegeLine(this.listQuery).then((response) => {
-        this.list = response.data.records;
-        this.total = response.data.total;
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false;
-        }, 1.5 * 1000);
-      });
-    },
-    handleFilter() {
-      // todo 这里如果没有条件，就默认查询马院的三个代码
-      this.listQuery.page = 1;
-      this.getList();
-    },
-    handleFilterRefresh() {
-      this.listQuery.page = 1;
-      this.listQuery.subjectClass = "";
-      this.getList();
-    },
-    sortChange(data) {
-      const { prop, order } = data;
-      if (prop === "id") {
-        this.sortByID(order);
-      }
-    },
-    sortByID(order) {
-      if (order === "ascending") {
-        this.listQuery.sort = "+id";
-      } else {
-        this.listQuery.sort = "-id";
-      }
-      this.handleFilter();
-    },
-    resetTemp() {
-      this.temp = {
-        id: undefined,
-        subjectClass: "",
-        degreeType: "",
-        scorePolite: "",
-        scoreEnglish: "",
-        scoreProfessional1: "",
-        scoreProfessional2: "",
-        scoreTotal: "",
-        scoreTotalPublic: "",
-        scoreTotalProfessional: "",
-      };
-    },
-    handleCreate() {
-      this.resetTemp();
-      this.dialogStatus = "create";
-      this.dialogFormVisible = true;
-      this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
-    },
-    createData() {
-      this.$refs["dataForm"].validate((valid) => {
-        if (valid) {
-          insertOrUpdateCollegeLine(this.temp).then(() => {
-            this.list.unshift(this.temp);
-            this.dialogFormVisible = false;
-            this.$notify({
-              title: "成功",
-              message: "创建成功",
-              type: "success",
-              duration: 2000,
-            });
-          });
-        }
-      });
-    },
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row); // copy obj
-      this.dialogStatus = "update";
-      this.dialogFormVisible = true;
-      this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
-    },
-    updateData() {
-      this.$refs["dataForm"].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp);
-          insertOrUpdateCollegeLine(tempData).then(() => {
-            this.dialogFormVisible = false;
-            this.$notify({
-              title: "成功",
-              message: "更新成功",
-              type: "success",
-              duration: 2000,
-            });
-          });
-        }
-      });
-    },
-    handleHide(row, index) {
-      this.$notify({
-        title: "隐藏成功",
-        message: "刷新后再次出现",
-        type: "success",
-        duration: 2000,
-      });
-      this.list.splice(index, 1);
-    },
-    handleDelete(row, index) {
-      this.$notify({
-        title: "暂无删除",
-        message: "暂无删除",
-        type: "success",
-        duration: 2000,
-      });
-      this.list.splice(index, 1);
-    },
-    handleDownload() {
-      this.downloadLoading = true;
-      import("@/vendor/Export2Excel").then((excel) => {
-        // 设置文件头
-        const tHeader = [
-          "院线主键",
-          "学科类型",
-          "学硕专硕",
-          "政治校线",
-          "英语校线",
-          "专业课一校线",
-          "专业课二校线",
-          "总分校线",
-          "公共课总分校线",
-          "专业课总分校线",
-        ];
-        // 设置文件需要的展示列
-        const filterVal = [
-          "id",
-          "subjectClass",
-          "studentClass",
-          "scorePolite",
-          "scoreEnglish",
-          "scoreProfessional1",
-          "scoreProfessional2",
-          "scoreTotal",
-          "scoreTotalPublic",
-          "scoreTotalProfessional",
-        ];
-        const data = this.formatJson(filterVal);
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: excelName,
-        });
-        this.downloadLoading = false;
-      });
-    },
-    formatJson(filterVal) {
-      return this.list.map((v) =>
-        filterVal.map((j) => {
-          if (j === "timestamp") {
-            return parseTime(v[j]);
-          } else {
-            return v[j];
-          }
-        })
-      );
-    },
-  },
-};
+});
 </script>
+
+<style scoped>
+.app-container {
+  padding: 20px;
+}
+
+.filter-container {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.link-type {
+  cursor: pointer;
+  color: #409eff;
+}
+</style>
