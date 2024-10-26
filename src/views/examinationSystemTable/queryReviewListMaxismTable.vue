@@ -256,6 +256,7 @@ import { ElNotification } from 'element-plus'
 import axios from 'axios'
 import * as XLSX from 'xlsx'
 
+// 定义 ListQuery 和 Temp 类型
 type ListQuery = {
   page: number
   limit: number
@@ -267,21 +268,22 @@ type ListQuery = {
 
 interface Temp {
   id: string;
-  rank: number | null;
+  rank: number;
   studentName: string;
   studentCode: string;
   subjectCode: string;
   subjectName: string;
-  scorePolite: number | null;
-  scoreEnglish: number | null;
-  scoreProfessional1: number | null;
-  scoreProfessional2: number | null;
-  scoreTotal: number | null;
-  scoreTotalPublic: number | null;
-  scoreTotalProfessional: number | null;
+  scorePolite: number;
+  scoreEnglish: number;
+  scoreProfessional1: number;
+  scoreProfessional2: number;
+  scoreTotal: number;
+  scoreTotalPublic: number;
+  scoreTotalProfessional: number;
   remark: string;
 }
 
+// 初始化选项和数据
 const subjectCodeOptions = [
   { key: '030500', display_name: '马克思主义理论' },
   { key: '071200', display_name: '科学技术史' },
@@ -295,7 +297,7 @@ const isCheckedOptions = [
 
 const excelName = '马克思主义理论复试名单'
 
-const list = ref<Temp[]>([])
+const list = ref<any[]>([])
 const total = ref(0)
 const listLoading = ref(true)
 const listQuery = reactive<ListQuery>({
@@ -346,6 +348,7 @@ const rules = {
 
 const downloadLoading = ref(false)
 
+// 定义 API 调用函数
 const fetchReviewListMarxism = (query: ListQuery) => {
   return axios.get('/dev-api/ReviewListMarxism/list', { params: query })
 }
@@ -366,21 +369,24 @@ interface ApiResponse {
   };
 }
 
+// 获取列表数据
 const getList = () => {
   listLoading.value = true;
 
+  // Debug: Log the listQuery to check its contents
   console.log('Request parameters:', JSON.stringify(listQuery));
 
-  fetchReviewListMarxism(listQuery).then((response: ApiResponse) => {
-    if (response.code != null) {
-      list.value = response.data.records;
-      total.value = response.data.total;
-      listQuery.page = response.data.current;
-      listQuery.limit = response.data.size;
+  fetchReviewListMarxism(listQuery).then((response) => {
+    const data = response.data as ApiResponse
+    if (data.code != null) {
+      list.value = data.data.records;
+      total.value = data.data.total;
+      listQuery.page = data.data.current;
+      listQuery.limit = data.data.size;
     } else {
       ElNotification({
         title: '错误',
-        message: response.msg || '获取数据失败',
+        message: data.msg || '获取数据失败',
         type: 'error',
         duration: 5000
       });
@@ -402,11 +408,13 @@ const getList = () => {
   });
 }
 
+// 处理筛选
 const handleFilter = () => {
   listQuery.page = 1
   getList()
 }
 
+// 处理筛选刷新
 const handleFilterRefresh = () => {
   listQuery.page = 1
   listQuery.studentName = ''
@@ -421,11 +429,13 @@ const sortChange = (data: { prop: string; order: string }) => {
   }
 }
 
+// 排序
 const sortByID = (order: string) => {
   listQuery.sort = order === 'ascending' ? '1' : '0'
   handleFilter()
 }
 
+// 重置临时数据
 const resetTemp = () => {
   Object.assign(temp, {
     id: '',
@@ -445,12 +455,14 @@ const resetTemp = () => {
   })
 }
 
+// 处理创建
 const handleCreate = () => {
   resetTemp()
   dialogStatus.value = 'create'
   dialogFormVisible.value = true
 }
 
+// 创建数据
 const createData = () => {
   // @ts-ignore
   dataForm.value.validate((valid: boolean) => {
@@ -469,12 +481,14 @@ const createData = () => {
   })
 }
 
+// 处理更新
 const handleUpdate = (row: Temp) => {
   Object.assign(temp, row)
   dialogStatus.value = 'update'
   dialogFormVisible.value = true
 }
 
+// 更新数据
 const updateData = () => {
   // @ts-ignore
   dataForm.value.validate((valid: boolean) => {
@@ -492,6 +506,7 @@ const updateData = () => {
   })
 }
 
+// 处理隐藏
 const handleHide = (row: Temp, index: number) => {
   ElNotification({
     title: '隐藏成功',
@@ -502,6 +517,7 @@ const handleHide = (row: Temp, index: number) => {
   list.value.splice(index, 1)
 }
 
+// 处理删除
 const handleDelete = (row: Temp, index: number) => {
   ElNotification({
     title: '暂无删除',
@@ -512,6 +528,7 @@ const handleDelete = (row: Temp, index: number) => {
   list.value.splice(index, 1)
 }
 
+// 处理下载
 const handleDownload = () => {
   downloadLoading.value = true
   const tHeader = [
@@ -520,76 +537,63 @@ const handleDownload = () => {
   ]
   const filterVal = [
     'id', 'rank', 'studentName', 'studentCode', 'subjectName', 'scorePolite', 'scoreEnglish',
-    'scoreProfessional1', 'scoreProfessional2', 'scoreTotal', 'scoreTotalPublic', 'scoreTotalProfessional', 'remark'
-  ]
-  const data = formatJson(filterVal)
-  const ws = XLSX.utils.json_to_sheet(data)
+    'scoreProfessional1', 'scoreProfessional2', 'scoreTotal', 'scoreTotalPublic', 'scoreTotalProfessional']
+
+  const data = list.value.map(item => filterVal.map(key => item[key]))
+
+  const ws = XLSX.utils.json_to_sheet(data, { header: tHeader })
   const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
+  XLSX.utils.book_append_sheet(wb, ws, 'Marksheet')
+
   XLSX.writeFile(wb, `${excelName}.xlsx`)
   downloadLoading.value = false
 }
 
-const formatJson = (filterVal: string[]) => {
-  return list.value.map(v => filterVal.map(j => {
-    return v[j]
-  }))
-}
-
-const subjectNameFilter = (status: string) => {
-  const statusMap: { [key: string]: string } = {
-    '马克思主义理论': 'success',
-    '科学技术史': 'info',
-    '科学技术哲学': 'default'
+const subjectNameFilter = (subjectName: string) => {
+  switch (subjectName) {
+    case '马克思主义理论':
+      return 'success'
+    case '科学技术史':
+      return 'warning'
+    case '科学技术哲学':
+      return 'info'
+    default:
+      return 'primary'
   }
-  return statusMap[status]
 }
 
 onMounted(() => {
   getList()
 })
-
-// 辅助函数
-const parseTime = (time?: object | string | number): string => {
-  if (time) {
-    const date = new Date(time)
-    const year = date.getFullYear()
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const day = date.getDate().toString().padStart(2, '0')
-    const hours = date.getHours().toString().padStart(2, '0')
-    const minutes = date.getMinutes().toString().padStart(2, '0')
-    const seconds = date.getSeconds().toString().padStart(2, '0')
-
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
-  }
-  return ''
-}
-
-// Expose the variables and methods for use in the template
-defineExpose({
-  listQuery,
-  handleFilter,
-  handleFilterRefresh,
-  handleCreate,
-  downloadLoading,
-  showMoreInfo,
-  getList,
-  dialogFormVisible,
-  dialogStatus,
-  temp,
-  rules,
-  textMap
-});
 </script>
 
 <style scoped>
+.app-container {
+  padding: 20px;
+}
+
 .filter-container {
-  padding-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .filter-item {
-  display: inline-block;
-  vertical-align: middle;
-  margin-bottom: 10px;
+  margin-right: 10px;
+}
+
+.link-type {
+  color: #409eff;
+  cursor: pointer;
+}
+
+.dialog-footer {
+  text-align: right;
+}
+
+.small-padding {
+  padding: 0;
+}
+
+.fixed-width {
+  white-space: nowrap;
 }
 </style>
