@@ -269,13 +269,16 @@
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :limit.sync="listQuery.limit"
-      :page.sync="listQuery.page"
-      :total="total"
-      @pagination="getList"
-    />
+    <div v-show="total > 0" class="pagination">
+      <el-pagination
+        background
+        layout="prev, pager, next, jumper"
+        :total="total"
+        :page-size.sync="listQuery.limit"
+        :current-page.sync="listQuery.page"
+        @current-change="getList"
+      />
+    </div>
 
     <el-dialog :title="textMap[dialogStatus]" v-model:visible="dialogFormVisible">
       <el-form
@@ -360,10 +363,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, reactive, computed } from "vue";
-import { fetchReviewListAll, fetchAcademyList, insertOrUpdateReviewListAll } from "@/api";
-import { ElMessage } from "element-plus";
-import { Pagination } from "@/components/Pagination";
+import { defineComponent, ref, onMounted, reactive, computed } from 'vue';
+import axios from 'axios';
+import * as XLSX from 'xlsx';
 
 interface Query {
   page: number;
@@ -404,8 +406,7 @@ interface Temp {
 }
 
 export default defineComponent({
-  name: "QueryReviewListAllTable",
-  components: { Pagination },
+  name: 'QueryReviewListAllTable',
   setup() {
     const tableKey = ref(0);
     const list = ref<any[]>([]);
@@ -415,54 +416,56 @@ export default defineComponent({
     const dialogFormVisible = ref(false);
     const dialogPvVisible = ref(false);
     const showMoreInfo = ref(false);
+    const dialogStatus = ref('create');
+    const pvData = ref<any[]>([]); // Define pvData for the statistics dialog
 
     const listQuery = reactive<Query>({
       page: 1,
       limit: 10,
-      subjectCode: "",
+      subjectCode: '',
       isChecked: undefined,
       studentName: undefined,
       type: undefined,
-      academySearchInput: "",
-      sort: "0",
+      academySearchInput: '',
+      sort: '0',
     });
 
     const temp = reactive<Temp>({
       id: undefined,
       rank: undefined,
-      studentName: "",
-      studentCode: "",
+      studentName: '',
+      studentCode: '',
       subjectCode: 1,
-      subjectName: "",
-      scorePolite: "",
-      scoreEnglish: "",
-      scoreProfessional1: "",
-      scoreProfessional2: "",
-      scoreTotal: "",
-      scoreTotalPublic: "",
-      scoreTotalProfessional: "",
-      remark: "",
+      subjectName: '',
+      scorePolite: '',
+      scoreEnglish: '',
+      scoreProfessional1: '',
+      scoreProfessional2: '',
+      scoreTotal: '',
+      scoreTotalPublic: '',
+      scoreTotalProfessional: '',
+      remark: '',
     });
 
     const subjectCodeOptions: Option[] = [
-      { key: "030500", display_name: "马克思主义理论" },
-      { key: "071200", display_name: "科学技术史" },
-      { key: "010108", display_name: "科学技术哲学" },
+      { key: '030500', display_name: '马克思主义理论' },
+      { key: '071200', display_name: '科学技术史' },
+      { key: '010108', display_name: '科学技术哲学' },
     ];
 
     const isCheckedOptions: Option[] = [
-      { key: "0", display_name: "录取" },
-      { key: "1", display_name: "落榜" },
+      { key: '0', display_name: '录取' },
+      { key: '1', display_name: '落榜' },
     ];
 
     const academyList: AcademyOption[] = [
-      { label: "学院1", key: "0" },
-      { label: "学院2", key: "1" },
+      { label: '学院1', key: '0' },
+      { label: '学院2', key: '1' },
     ];
 
     const sortOptions = [
-      { label: "高分优先", key: "0" },
-      { label: "低分优先", key: "1" },
+      { label: '高分优先', key: '0' },
+      { label: '低分优先', key: '1' },
     ];
 
     const subjectCodeKeyValue = computed(() => {
@@ -473,26 +476,29 @@ export default defineComponent({
     });
 
     const textMap = {
-      update: "Edit",
-      create: "Create",
+      update: 'Edit',
+      create: 'Create',
     };
 
     const rules = {
-      type: [{ required: true, message: "type is required", trigger: "change" }],
+      type: [{ required: true, message: 'type is required', trigger: 'change' }],
       timestamp: [
-        { type: "date", required: true, message: "timestamp is required", trigger: "change" },
+        { type: 'date', required: true, message: 'timestamp is required', trigger: 'change' },
       ],
-      studentName: [{ required: true, message: "studentName is required", trigger: "blur" }],
+      studentName: [{ required: true, message: 'studentName is required', trigger: 'blur' }],
+    };
+
+    const showMessage = (message: string, type: 'success' | 'error' = 'success') => {
+      console.log({ message, type });
+      // Here you can implement a global message component or use an Element Plus Message component
     };
 
     const getList = () => {
       listLoading.value = true;
-      fetchReviewListAll(listQuery).then((response) => {
+      axios.get('/dev-api/AcademyGenerateScore/list', { params: listQuery }).then((response) => {
         list.value = response.data.records;
         total.value = response.data.total;
-        setTimeout(() => {
-          listLoading.value = false;
-        }, 1500);
+        listLoading.value = false;
       });
     };
 
@@ -503,117 +509,122 @@ export default defineComponent({
 
     const handleFilterRefresh = () => {
       listQuery.page = 1;
-      listQuery.studentName = "";
+      listQuery.studentName = '';
       getList();
     };
 
     const handleCreate = () => {
       resetTemp();
       dialogFormVisible.value = true;
+      dialogStatus.value = 'create';
     };
 
     const resetTemp = () => {
       Object.assign(temp, {
         id: undefined,
         rank: undefined,
-        studentName: "",
-        studentCode: "",
-        subjectCode: "",
-        subjectName: "",
-        scorePolite: "",
-        scoreEnglish: "",
-        scoreProfessional1: "",
-        scoreProfessional2: "",
-        scoreTotal: "",
-        scoreTotalPublic: "",
-        scoreTotalProfessional: "",
-        remark: "",
+        studentName: '',
+        studentCode: '',
+        subjectCode: '',
+        subjectName: '',
+        scorePolite: '',
+        scoreEnglish: '',
+        scoreProfessional1: '',
+        scoreProfessional2: '',
+        scoreTotal: '',
+        scoreTotalPublic: '',
+        scoreTotalProfessional: '',
+        remark: '',
       });
     };
 
     const createData = () => {
-      insertOrUpdateReviewListAll(temp).then(() => {
+      axios.post('/dev-api/AcademyGenerateScore/insertOrUpdate', temp).then(() => {
         list.value.unshift(temp);
         dialogFormVisible.value = false;
-        ElMessage.success("创建成功");
+        showMessage('创建成功');
       });
     };
 
     const handleUpdate = (row: any) => {
       Object.assign(temp, row);
       dialogFormVisible.value = true;
+      dialogStatus.value = 'update';
     };
 
     const updateData = () => {
-      insertOrUpdateReviewListAll({ ...temp }).then(() => {
+      axios.post('/dev-api/AcademyGenerateScore/insertOrUpdate', { ...temp }).then(() => {
         dialogFormVisible.value = false;
-        ElMessage.success("更新成功");
+        showMessage('更新成功');
       });
     };
 
     const handleHide = (row: any, index: number) => {
-      ElMessage.success("隐藏成功, 刷新后再次出现");
+      showMessage('隐藏成功, 刷新后再次出现');
       list.value.splice(index, 1);
     };
 
     const handleDelete = (row: any, index: number) => {
-      ElMessage.success("暂无删除");
+      showMessage('暂无删除', 'error');
       list.value.splice(index, 1);
     };
 
     const handleDownload = () => {
       downloadLoading.value = true;
-      import("@/vendor/Export2Excel").then((excel) => {
-        const tHeader = [
-          "id",
-          "初试排名",
-          "学生姓名",
-          "学生编号",
-          "学科名称",
-          "政治",
-          "英语",
-          "专业课一",
-          "专业课二",
-          "初试总分",
-          "初试公共课总分",
-          "初试专业课总分",
-          "备注",
-        ];
-        const filterVal = [
-          "id",
-          "rank",
-          "studentName",
-          "studentCode",
-          "subjectName",
-          "scorePolite",
-          "scoreEnglish",
-          "scoreProfessional1",
-          "scoreProfessional2",
-          "scoreTotal",
-          "scoreTotalPublic",
-          "scoreTotalProfessional",
-          "remark",
-        ];
-        const data = formatJson(filterVal);
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: "所有专业复试名单",
-        });
-        downloadLoading.value = false;
-      });
+      const tHeader = [
+        'id',
+        '初试排名',
+        '学生姓名',
+        '学生编号',
+        '学科名称',
+        '政治',
+        '英语',
+        '专业课一',
+        '专业课二',
+        '初试总分',
+        '初试公共课总分',
+        '初试专业课总分',
+        '备注',
+      ];
+      const filterVal = [
+        'id',
+        'rank',
+        'studentName',
+        'studentCode',
+        'subjectName',
+        'scorePolite',
+        'scoreEnglish',
+        'scoreProfessional1',
+        'scoreProfessional2',
+        'scoreTotal',
+        'scoreTotalPublic',
+        'scoreTotalProfessional',
+        'remark',
+      ];
+      const data = formatJson(filterVal);
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+      XLSX.writeFile(workbook, '所有专业复试名单.xlsx');
+      downloadLoading.value = false;
     };
 
     const formatJson = (filterVal: string[]) => {
       return list.value.map((v) =>
-        filterVal.map((j) => v[j])
+        filterVal.reduce((acc: any, key: string) => {
+          acc[key] = v[key];
+          return acc;
+        }, {})
       );
     };
 
     const remoteMethod = () => {
       listLoading.value = true;
-      fetchAcademyList().then((response) => {
-        academyList.value = response.data;
+      axios.get('/dev-api/AcademyGenerateScore/list').then((response) => {
+        academyList.length = response.data.length;
+        response.data.forEach((item: any, index: number) => {
+          academyList[index] = { label: item.name, key: item.id };
+        });
         listLoading.value = false;
       });
     };
@@ -652,6 +663,9 @@ export default defineComponent({
       showMoreInfo,
       subjectCodeKeyValue,
       remoteMethod,
+      dialogStatus,
+      showMessage,
+      pvData,
     };
   },
 });
@@ -677,6 +691,11 @@ export default defineComponent({
 
 .el-table th,
 .el-table td {
+  text-align: center;
+}
+
+.pagination {
+  margin-top: 20px;
   text-align: center;
 }
 </style>
