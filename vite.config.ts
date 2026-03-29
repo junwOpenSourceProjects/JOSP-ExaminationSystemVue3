@@ -9,7 +9,8 @@ import Icons from "unplugin-icons/vite";
 import IconsResolver from "unplugin-icons/resolver";
 
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
-import mockDevServerPlugin from "vite-plugin-mock-dev-server";
+// vite-plugin-mock-dev-server暂时不支持Vite 8,已禁用
+// import * as mockDevServerModule from "vite-plugin-mock-dev-server";
 
 import UnoCSS from "unocss/vite";
 import { resolve } from "path";
@@ -39,13 +40,16 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       alias: {
         "@": pathSrc,
       },
+      // Vite 6 默认conditions
+      conditions: ['module', 'browser', 'development|production'],
     },
     css: {
       // CSS 预处理器
       preprocessorOptions: {
         // 定义全局 SCSS 变量
         scss: {
-          javascriptEnabled: true,
+          // Vite 6 使用现代API
+          api: 'modern-compiler',
           additionalData: `
             @use "@/styles/variables.scss" as *;
           `,
@@ -227,6 +231,9 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           chunkFileNames: "js/[name].[hash].js",
           // 用于输出静态资源的命名，[ext]表示文件扩展名
           assetFileNames: (assetInfo: any) => {
+            if (!assetInfo.name) {
+              return "assets/[hash].[ext]";
+            }
             const info = assetInfo.name.split(".");
             let extType = info[info.length - 1];
             // console.log('文件信息', assetInfo.name)

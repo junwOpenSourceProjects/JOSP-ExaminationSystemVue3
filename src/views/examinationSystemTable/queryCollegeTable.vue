@@ -92,12 +92,12 @@
         width="280px"
       >
         <template #default="{ row, $index }">
-          <el-button size="mini" type="primary" @click="handleUpdate(row)">
+          <el-button size="small" type="primary" @click="handleUpdate(row)">
             编辑
           </el-button>
           <el-button
             v-if="row.status != 'deleted'"
-            size="mini"
+            size="small"
             type="default"
             @click="handleHide(row, $index)"
           >
