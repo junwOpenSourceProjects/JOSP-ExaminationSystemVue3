@@ -1,16 +1,27 @@
-# 🎓 JOSP-ExaminationSystemVue3 - 考研成绩查询系统前端
+# 🎓 JOSP-ExaminationSystemVue3 - 考研成绩查询与管理系统前端
 
-![Vue](https://img.shields.io/badge/Vue-3.3.4-4FC08D?style=flat-square&logo=vue.js)
-![Vite](https://img.shields.io/badge/Vite-4.4.9-646CFF?style=flat-square&logo=vite)
-![Element Plus](https://img.shields.io/badge/Element%20Plus-2.3.14-409EFF?style=flat-square&logo=element)
-![Pinia](https://img.shields.io/badge/Pinia-2.1.6-FFD859?style=flat-square)
+![Vue](https://img.shields.io/badge/Vue-3.5.12-4FC08D?style=flat-square&logo=vue.js)
+![Vite](https://img.shields.io/badge/Vite-5.4.9-646CFF?style=flat-square&logo=vite)
+![Element Plus](https://img.shields.io/badge/Element%20Plus-2.8.6-409EFF?style=flat-square&logo=element)
+![Pinia](https://img.shields.io/badge/Pinia-2.2.4-FFD859?style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.6.3-3178C6?style=flat-square&logo=typescript)
 ![License](https://img.shields.io/badge/License-AGPL--3.0-blue?style=flat-square)
 
-> Vue3前端 - 考研成绩查询系统的现代化响应式界面
+> 基于vue3-element-admin模板的考研成绩查询与综合管理系统前端
 
 ## 📖 项目简介
 
-JOSP-ExaminationSystemVue3 是考研成绩查询系统的前端项目,基于Vue3全家桶构建,提供响应式的成绩查询、数据展示和后台管理界面。
+JOSP-ExaminationSystemVue3 是一个功能丰富的考研成绩查询与综合管理系统前端项目,基于vue3-element-admin模板开发,集成考研成绩查询、课表管理、视频管理等多个子系统。
+
+### 🎯 项目定位
+
+本项目是一个**综合性的考研管理平台前端**,包含:
+- ✅ 考研成绩查询与分析系统(核心功能)
+- ✅ 课程表管理系统
+- ✅ 视频内容管理平台
+- ✅ 学生/教师信息管理
+- ✅ 个人账单管理系统
+- ✅ 数据可视化与图表展示
 
 ### ✨ 核心特性
 
@@ -19,23 +30,33 @@ JOSP-ExaminationSystemVue3 是考研成绩查询系统的前端项目,基于Vue3
 - 💾 **Pinia状态管理** - 轻量级状态管理方案
 - 🎯 **Element Plus** - 现代化UI组件库
 - 📊 **ECharts图表** - 数据可视化展示
-- 🔐 **权限控制** - 基于角色的访问控制
+- 🔐 **RBAC权限控制** - 基于角色的访问控制
+- 🌐 **国际化支持** - vue-i18n多语言
+- 📝 **富文本编辑** - wangEditor编辑器集成
 
 ## 🏗️ 系统架构
 
 ```mermaid
 graph TB
-    subgraph "前端架构"
+    subgraph "前端架构 - Vue3 + TypeScript"
         A[用户界面] --> B[Vue组件层]
         B --> C[Composition API]
         B --> D[Pinia Store]
         B --> E[Vue Router]
         
-        subgraph "组件模块"
-            B1[成绩查询模块]
-            B2[数据展示模块]
-            B3[用户管理模块]
-            B4[系统设置模块]
+        subgraph "核心业务模块"
+            B1[考研成绩查询模块]
+            B2[课表管理系统]
+            B3[视频内容管理]
+            B4[学生/教师管理]
+            B5[账单管理系统]
+        end
+        
+        subgraph "系统管理模块"
+            B6[用户管理]
+            B7[角色管理]
+            B8[菜单管理]
+            B9[字典管理]
         end
         
         D --> D1[用户状态]
@@ -44,7 +65,7 @@ graph TB
         
         C --> F[API服务层]
         F --> G[Axios拦截器]
-        G --> H[后端API]
+        G --> H[后端API - JOSP-ExaminationSystemJava]
         
         E --> E1[路由守卫]
         E --> E2[动态路由]
@@ -54,19 +75,26 @@ graph TB
     style B fill:#fff4e6
     style D fill:#f3e5f5
     style F fill:#e8f5e9
+    style B1 fill:#ffe6e6
+    style B2 fill:#e6f3ff
+    style B3 fill:#fff0e6
 ```
 
 ## 🛠️ 技术栈
 
 | 技术 | 版本 | 说明 |
 |------|------|------|
-| Vue | 3.3.4 | 渐进式JavaScript框架 |
-| Vite | 4.4.9 | 下一代前端构建工具 |
-| Element Plus | 2.3.14 | Vue3 UI组件库 |
-| Pinia | 2.1.6 | Vue3状态管理 |
-| Vue Router | 4.2.5 | Vue3官方路由 |
-| Axios | 1.5.0 | HTTP客户端 |
-| ECharts | 5.4.3 | 数据可视化库 |
+| Vue | 3.5.12 | 渐进式JavaScript框架 |
+| Vite | 5.4.9 | 下一代前端构建工具 |
+| Element Plus | 2.8.6 | Vue3 UI组件库 |
+| Pinia | 2.2.4 | Vue3状态管理 |
+| Vue Router | 4.4.5 | Vue3官方路由 |
+| Axios | 1.7.7 | HTTP客户端 |
+| ECharts | 5.5.1 | 数据可视化库 |
+| TypeScript | 5.6.3 | JavaScript超集 |
+| wangEditor | 5.1.23 | 富文本编辑器 |
+| vue-i18n | 10.0.6 | 国际化解决方案 |
+| XLSX | 0.18.5 | Excel文件处理 |
 
 ## 🚀 快速开始
 
@@ -122,233 +150,121 @@ JOSP-ExaminationSystemVue3/
 └── package.json        # 项目依赖
 ```
 
-## 💡 核心功能
+## 💡 核心功能模块
 
-### 1. 成绩查询模块
+### 1. 考研成绩查询系统
+
+#### 功能列表:
+- **国家线查询** - 查询历年国家分数线(A/B区、学硕/专硕)
+- **院校线查询** - 查询各院校复试分数线
+- **复试名单查询** - 按专业查询复试名单
+- **马克思主义理论专业** - 专业代码030500成绩查询
+- **科学技术史专业** - 专业代码071200成绩查询  
+- **科学技术哲学专业** - 专业代码010108成绩查询
+
+#### 核心组件:
+```vue
+<!-- src/views/examinationSystemTable/queryNationLineTable.vue -->
+<!-- 国家线查询表格,支持A/B类、学硕/专硕筛选 -->
+<el-select v-model="listQuery.studentClass" placeholder="A/B地区">
+  <el-option key="A" label="A类" value="A" />
+  <el-option key="B" label="B类" value="B" />
+</el-select>
+
+<!-- src/views/examinationSystemTable/queryReviewListAllTable.vue -->
+<!-- 复试名单查询,支持按姓名、专业代码、录取情况筛选 -->
+<el-input v-model="listQuery.studentName" placeholder="姓名" />
+<el-select v-model="listQuery.subjectCode" placeholder="专业代码">
+  <el-option key="030500" label="马克思主义理论" />
+  <el-option key="071200" label="科学技术史" />
+  <el-option key="010108" label="科学技术哲学" />
+</el-select>
+```
+
+#### 数据字段:
+- **考生信息**: 姓名、考生编号、专业代码、专业名称
+- **成绩信息**: 政治、英语、专业课一、专业课二、总分
+- **排名信息**: 初试排名
+- **其他**: 公共课总分、专业课总分、备注
+
+### 2. 课表管理系统
 
 ```vue
-<template>
-  <div class="score-query">
-    <el-form :model="queryForm" :rules="rules" ref="formRef">
-      <el-form-item label="准考证号" prop="examId">
-        <el-input v-model="queryForm.examId" placeholder="请输入准考证号" />
-      </el-form-item>
-      <el-form-item label="身份证号" prop="idCard">
-        <el-input v-model="queryForm.idCard" placeholder="请输入身份证号" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="handleQuery">查询成绩</el-button>
-      </el-form-item>
-    </el-form>
-    
-    <el-card v-if="scoreData" class="score-card">
-      <template #header>
-        <span>成绩详情</span>
-      </template>
-      <el-descriptions :column="2" border>
-        <el-descriptions-item label="考生姓名">{{ scoreData.name }}</el-descriptions-item>
-        <el-descriptions-item label="总分">{{ scoreData.totalScore }}</el-descriptions-item>
-        <el-descriptions-item label="政治">{{ scoreData.politics }}</el-descriptions-item>
-        <el-descriptions-item label="英语">{{ scoreData.english }}</el-descriptions-item>
-        <el-descriptions-item label="专业课一">{{ scoreData.major1 }}</el-descriptions-item>
-        <el-descriptions-item label="专业课二">{{ scoreData.major2 }}</el-descriptions-item>
-      </el-descriptions>
-    </el-card>
-  </div>
-</template>
-
-<script setup>
-import { ref, reactive } from 'vue'
-import { ElMessage } from 'element-plus'
-import { queryScore } from '@/api/score'
-
-const formRef = ref(null)
-const scoreData = ref(null)
-
-const queryForm = reactive({
-  examId: '',
-  idCard: ''
-})
-
-const rules = {
-  examId: [{ required: true, message: '请输入准考证号', trigger: 'blur' }],
-  idCard: [{ required: true, message: '请输入身份证号', trigger: 'blur' }]
-}
-
-const handleQuery = async () => {
-  await formRef.value.validate()
-  const res = await queryScore(queryForm)
-  if (res.code === 200) {
-    scoreData.value = res.data
-    ElMessage.success('查询成功')
-  }
-}
-</script>
+<!-- src/views/AmyselfPage/classSystem/class-system.vue -->
+<!-- 支持多教室课表展示、学生/教师信息管理 -->
+<el-table :data="class_data" border>
+  <el-table-column label="时间" prop="class_time" />
+  <el-table-column label="教室1">
+    <el-table-column label="学生" prop="st_name" />
+    <el-table-column label="科目" prop="st_subject" />
+    <el-table-column label="老师" prop="teacher_name" />
+  </el-table-column>
+</el-table>
 ```
 
-### 2. 状态管理
+功能特性:
+- 多教室课表展示
+- 学生信息弹窗编辑
+- 教师信息管理
+- 账单记录功能
 
-```javascript
-// stores/score.js
-import { defineStore } from 'pinia'
-import { getScoreList, getStatistics } from '@/api/score'
+### 3. 视频内容管理系统
 
-export const useScoreStore = defineStore('score', {
-  state: () => ({
-    scoreList: [],
-    statistics: null,
-    loading: false
-  }),
-  
-  getters: {
-    totalStudents: (state) => state.statistics?.total || 0,
-    averageScore: (state) => state.statistics?.average || 0
-  },
-  
-  actions: {
-    async fetchScoreList(params) {
-      this.loading = true
-      try {
-        const res = await getScoreList(params)
-        this.scoreList = res.data.list
-        return res
-      } finally {
-        this.loading = false
-      }
-    },
-    
-    async fetchStatistics() {
-      const res = await getStatistics()
-      this.statistics = res.data
-      return res
-    }
-  }
-})
+```vue
+<!-- src/views/AmyselfPage/videoListManage/video-list-manage.vue -->
+<!-- 视频列表管理,支持多维度筛选 -->
+<el-form :inline="true" :model="formInline">
+  <el-form-item label="封面设计师">
+    <el-select filterable>
+      <el-option v-for="item in tabledata" :key="item.table_designer" />
+    </el-select>
+  </el-form-item>
+  <el-form-item label="配音员">
+    <el-select>
+      <el-option v-for="item in tabledata" :key="item.table_audio" />
+    </el-select>
+  </el-form-item>
+</el-form>
 ```
 
-### 3. 路由配置
+管理维度:
+- 封面设计师筛选
+- 配音员筛选
+- 文章作者筛选
+- 剪辑师筛选
+- 时间范围筛选
 
-```javascript
-// router/index.js
-import { createRouter, createWebHistory } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+### 4. 用户权限管理
 
-const routes = [
-  {
-    path: '/',
-    name: 'Layout',
-    component: () => import('@/layouts/MainLayout.vue'),
-    redirect: '/home',
-    children: [
-      {
-        path: 'home',
-        name: 'Home',
-        component: () => import('@/views/Home.vue'),
-        meta: { title: '首页' }
-      },
-      {
-        path: 'query',
-        name: 'Query',
-        component: () => import('@/views/Query.vue'),
-        meta: { title: '成绩查询' }
-      },
-      {
-        path: 'admin',
-        name: 'Admin',
-        component: () => import('@/views/admin/Index.vue'),
-        meta: { title: '后台管理', requiresAuth: true },
-        children: [
-          {
-            path: 'students',
-            name: 'Students',
-            component: () => import('@/views/admin/Students.vue'),
-            meta: { title: '学生管理' }
-          },
-          {
-            path: 'scores',
-            name: 'Scores',
-            component: () => import('@/views/admin/Scores.vue'),
-            meta: { title: '成绩管理' }
-          }
-        ]
-      }
-    ]
-  }
-]
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes
-})
-
-// 路由守卫
-router.beforeEach((to, from, next) => {
-  const userStore = useUserStore()
-  
-  if (to.meta.requiresAuth && !userStore.isLoggedIn) {
-    next('/login')
-  } else {
-    next()
-  }
-})
-
-export default router
-```
-
-### 4. API请求封装
-
-```javascript
-// utils/request.js
-import axios from 'axios'
-import { ElMessage } from 'element-plus'
-
-const service = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 10000
-})
-
-// 请求拦截器
-service.interceptors.request.use(
-  config => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`
-    }
-    return config
-  },
-  error => {
-    return Promise.reject(error)
-  }
-)
-
-// 响应拦截器
-service.interceptors.response.use(
-  response => {
-    const res = response.data
-    if (res.code !== 200) {
-      ElMessage.error(res.message || '请求失败')
-      return Promise.reject(new Error(res.message || 'Error'))
-    }
-    return res
-  },
-  error => {
-    ElMessage.error(error.message || '网络错误')
-    return Promise.reject(error)
-  }
-)
-
-export default service
-```
+基于RBAC模型的权限控制系统:
+- **用户管理** - 用户增删改查、分配角色
+- **角色管理** - 角色定义、权限分配
+- **菜单管理** - 动态菜单配置
+- **部门管理** - 组织架构管理
+- **字典管理** - 数据字典维护
 
 ## 🎨 UI界面
 
-### 主要页面展示
+### 主要功能页面:
 
-- **首页** - 系统介绍和快速查询入口
-- **成绩查询** - 学生成绩查询表单
-- **成绩详情** - 成绩展示和打印功能
-- **后台管理** - 学生信息、成绩数据管理
-- **数据统计** - 图表展示成绩分布情况
+#### 考研成绩查询模块:
+- **国家线查询** - A/B区国家线分数表查询
+- **院校线查询** - 各院校复试分数线查询
+- **复试名单查询** - 按专业查询复试名单
+- **成绩管理** - 成绩数据的增删改查
+- **Excel导出** - 支持导出Excel格式成绩单
+
+#### 个人管理模块:
+- **课表系统** - 多教室课表展示与管理
+- **视频管理** - 视频内容多维度管理
+- **账单管理** - 个人账单记录系统
+- **学生/教师管理** - 信息登记与维护
+
+#### 系统管理模块:
+- **用户管理** - 用户账号管理
+- **角色权限** - 角色与权限配置
+- **菜单管理** - 动态菜单配置
+- **数据字典** - 字典数据维护
 
 ## 🔧 开发指南
 
@@ -421,8 +337,16 @@ CMD ["nginx", "-g", "daemon off;"]
 
 ## 🔗 相关项目
 
-- 后端项目: [JOSP-ExaminationSystemJava](../JOSP-ExaminationSystemJava)
-- API文档: [在线API文档](https://api.example.com/docs)
+### 后端项目:
+- **JOSP-ExaminationSystemJava** - 考研成绩查询系统后端API
+  - 提供成绩查询、用户管理、权限控制等RESTful API
+  - 基于Spring Boot + MyBatis-Plus开发
+  - 支持MySQL数据持久化
+
+### 技术来源:
+- **vue3-element-admin** - 本项目基于该模板开发
+  - 仓库地址: https://gitee.com/youlaiorg/vue3-element-admin.git
+  - 感谢有来开源组织提供的优秀模板
 
 ## 📝 更新日志
 
