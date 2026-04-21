@@ -1,10 +1,10 @@
 # 🎓 JOSP-ExaminationSystemVue3 - 考研成绩查询与管理系统前端
 
-![Vue](https://img.shields.io/badge/Vue-3.5.12-4FC08D?style=flat-square&logo=vue.js)
-![Vite](https://img.shields.io/badge/Vite-5.4.9-646CFF?style=flat-square&logo=vite)
-![Element Plus](https://img.shields.io/badge/Element%20Plus-2.8.6-409EFF?style=flat-square&logo=element)
-![Pinia](https://img.shields.io/badge/Pinia-2.2.4-FFD859?style=flat-square)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.6.3-3178C6?style=flat-square&logo=typescript)
+![Vue](https://img.shields.io/badge/Vue-3.5.32-4FC08D?style=flat-square&logo=vue.js)
+![Vite](https://img.shields.io/badge/Vite-8.0.9-646CFF?style=flat-square&logo=vite)
+![Element Plus](https://img.shields.io/badge/Element%20Plus-2.13.7-409EFF?style=flat-square&logo=element)
+![Pinia](https://img.shields.io/badge/Pinia-3.0.4-FFD859?style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-6.0.3-3178C6?style=flat-square&logo=typescript)
 ![License](https://img.shields.io/badge/License-AGPL--3.0-blue?style=flat-square)
 
 > 基于vue3-element-admin模板的考研成绩查询与综合管理系统前端
@@ -84,16 +84,16 @@ graph TB
 
 | 技术 | 版本 | 说明 |
 |------|------|------|
-| Vue | 3.5.12 | 渐进式JavaScript框架 |
-| Vite | 5.4.9 | 下一代前端构建工具 |
-| Element Plus | 2.8.6 | Vue3 UI组件库 |
-| Pinia | 2.2.4 | Vue3状态管理 |
-| Vue Router | 4.4.5 | Vue3官方路由 |
-| Axios | 1.7.7 | HTTP客户端 |
-| ECharts | 5.5.1 | 数据可视化库 |
-| TypeScript | 5.6.3 | JavaScript超集 |
+| Vue | 3.5.32 | 渐进式JavaScript框架 |
+| Vite | 8.0.9 | 下一代前端构建工具 |
+| Element Plus | 2.13.7 | Vue3 UI组件库 |
+| Pinia | 3.0.4 | Vue3状态管理 |
+| Vue Router | 5.0.4 | Vue3官方路由 |
+| Axios | 1.15.1 | HTTP客户端 |
+| ECharts | 6.0.0 | 数据可视化库 |
+| TypeScript | 6.0.3 | JavaScript超集 |
 | wangEditor | 5.1.23 | 富文本编辑器 |
-| vue-i18n | 10.0.6 | 国际化解决方案 |
+| vue-i18n | 11.3.0 | 国际化解决方案 |
 | XLSX | 0.18.5 | Excel文件处理 |
 
 ## 🚀 快速开始

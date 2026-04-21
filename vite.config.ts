@@ -78,8 +78,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       vue(),
       // jsx、tsx语法支持
       vueJsx(),
-      // MOCK 服务
-      env.VITE_MOCK_DEV_SERVER === "true" ? mockDevServerPlugin() : null,
+      // MOCK 服务 (vite-plugin-mock-dev-server 不支持 Vite 8，已禁用)
+      // env.VITE_MOCK_DEV_SERVER === "true" ? mockDevServerPlugin() : null,
       UnoCSS({
         hmrTopLevelAwait: false,
       }),
