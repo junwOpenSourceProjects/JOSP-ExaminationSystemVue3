@@ -5,12 +5,25 @@ dist-ssr
 *.local
 .history
 
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+coverage/
+
 # Editor directories and files
 .idea
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
+
 *.local
 
 package-lock.json
