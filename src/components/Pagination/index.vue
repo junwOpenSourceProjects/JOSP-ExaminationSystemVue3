@@ -1,3 +1,4 @@
+<!-- 分页组件 -->
 <template>
   <el-scrollbar>
     <div :class="{ hidden: hidden }" class="pagination">

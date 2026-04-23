@@ -1,3 +1,4 @@
+<!-- 应用链接组件 -->
 <template>
   <component :is="linkType" v-bind="linkProps(to)">
     <slot></slot>

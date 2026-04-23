@@ -1,3 +1,4 @@
+<!-- 主题颜色选择器 -->
 <template>
   <el-color-picker
     v-model="currentColor"

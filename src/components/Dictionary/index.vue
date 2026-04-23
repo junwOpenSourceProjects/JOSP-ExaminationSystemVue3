@@ -1,3 +1,4 @@
+<!-- 字典选择组件 -->
 <template>
   <el-select
     v-model="selectedValue"

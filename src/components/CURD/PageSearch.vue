@@ -1,3 +1,4 @@
+<!-- 通用搜索表单组件 -->
 <template>
   <el-card
     shadow="never"

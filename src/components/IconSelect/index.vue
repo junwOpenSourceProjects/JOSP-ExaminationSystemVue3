@@ -1,3 +1,4 @@
+<!-- 图标选择组件 -->
 <template>
   <div ref="iconSelectRef" :style="'width:' + width">
     <el-popover :visible="popoverVisible" :width="width" placement="bottom-end">

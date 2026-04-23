@@ -1,3 +1,4 @@
+<!-- 图标示例页面 -->
 <template>
   <div class="icons-container">
     <el-tabs type="border-card">

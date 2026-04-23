@@ -1,3 +1,4 @@
+<!-- 路由重定向页面 -->
 <template>
   <div></div>
 </template>

@@ -1,3 +1,4 @@
+<!-- 侧边栏Logo组件 -->
 <template>
   <div class="logo-container">
     <transition enter-active-class="animate__animated animate__fadeInLeft">

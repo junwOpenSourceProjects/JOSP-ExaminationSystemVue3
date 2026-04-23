@@ -1,3 +1,4 @@
+<!-- 查询院校生成成绩表格 -->
 <template>
   <div class="app-container">
     <div class="filter-container">

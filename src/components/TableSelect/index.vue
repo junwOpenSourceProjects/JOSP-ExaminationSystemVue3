@@ -1,3 +1,4 @@
+<!-- 表格选择组件 -->
 <template>
   <div ref="tableSelectRef" :style="'width:' + width">
     <el-popover

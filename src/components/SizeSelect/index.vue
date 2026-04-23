@@ -1,3 +1,4 @@
+<!-- 尺寸选择组件 -->
 <template>
   <el-dropdown trigger="click" @command="handleSizeChange">
     <div>

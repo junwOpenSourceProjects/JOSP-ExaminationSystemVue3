@@ -1,3 +1,4 @@
+<!-- CRUD示例页面 -->
 <template>
   <div class="app-container">
     <div class="flex-x-between mb-10">

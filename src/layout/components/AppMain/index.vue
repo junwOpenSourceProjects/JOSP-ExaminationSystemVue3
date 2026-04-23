@@ -1,3 +1,4 @@
+<!-- 主内容区域 -->
 <template>
   <section class="app-main" :style="{ minHeight: minHeight }">
     <router-view>

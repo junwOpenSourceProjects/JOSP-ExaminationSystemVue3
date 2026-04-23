@@ -1,3 +1,4 @@
+<!-- 标签页视图 -->
 <template>
   <div class="tags-container">
     <el-scrollbar

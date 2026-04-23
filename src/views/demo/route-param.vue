@@ -1,3 +1,4 @@
+<!-- 路由参数示例页面 -->
 <template>
   <div class="p-5">路由参数type：{{ query }}</div>
 </template>

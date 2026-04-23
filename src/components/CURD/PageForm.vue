@@ -1,3 +1,4 @@
+<!-- 通用表单组件 -->
 <template>
   <el-form
     ref="formRef"

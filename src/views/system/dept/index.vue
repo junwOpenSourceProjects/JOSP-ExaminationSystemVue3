@@ -1,3 +1,4 @@
+<!-- 部门管理页面 -->
 <template>
   <div class="app-container">
     <div class="search-container">

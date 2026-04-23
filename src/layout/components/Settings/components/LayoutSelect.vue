@@ -1,3 +1,4 @@
+<!-- 布局选择组件 -->
 <template>
   <div class="flex flex-wrap justify-around w-full h-12">
     <el-tooltip content="左侧模式" placement="bottom">

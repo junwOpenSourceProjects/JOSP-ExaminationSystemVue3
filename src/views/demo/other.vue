@@ -1,3 +1,4 @@
+<!-- 其他功能示例页面 -->
 <template>
   <div>路由参数：{{ query }}</div>
 </template>
