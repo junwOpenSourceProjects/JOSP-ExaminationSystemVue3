@@ -1,122 +1,27 @@
 {
-  "name": "vue3-element-admin",
-  "version": "2.11.5",
+  "name": "josp-examination-nuxt",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc --noEmit & vite build",
-    "preview": "vite preview",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --noEmit",
-    "lint:eslint": "eslint  --fix --ext .ts,.js,.vue ./src ",
-    "lint:prettier": "prettier --write \"**/*.{js,cjs,ts,json,tsx,css,less,scss,vue,html,md}\"",
-    "lint:stylelint": "stylelint  \"**/*.{css,scss,vue}\" --fix",
-    "lint:lint-staged": "lint-staged",
-    "preinstall": "npx only-allow pnpm",
-    "prepare": "husky"
-  },
-  "lint-staged": {
-    "*.{js,ts}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{cjs,json}": [
-      "prettier --write"
-    ],
-    "*.{vue,html}": [
-      "eslint --fix",
-      "prettier --write",
-      "stylelint --fix"
-    ],
-    "*.{scss,css}": [
-      "stylelint --fix",
-      "prettier --write"
-    ],
-    "*.md": [
-      "prettier --write"
-    ]
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@element-plus/icons-vue": "^2.3.2",
-    "@vueuse/core": "^14.2.1",
-    "@wangeditor/editor": "^5.1.23",
-    "@wangeditor/editor-for-vue": "5.1.10",
-    "animate.css": "^4.1.1",
-    "axios": "^1.15.2",
-    "color": "^5.0.3",
-    "echarts": "^6.0.0",
-    "element-plus": "^2.13.6",
-    "exceljs": "^4.4.0",
-    "lodash-es": "^4.17.23",
-    "net": "^1.0.2",
-    "nprogress": "^0.2.0",
-    "path-browserify": "^1.0.1",
-    "path-to-regexp": "^8.4.0",
-    "pinia": "^3.0.4",
-    "sockjs-client": "1.6.1",
-    "sortablejs": "^1.15.7",
-    "stompjs": "^2.3.3",
-    "vue": "^3.5.31",
-    "vue-echarts": "^8.0.1",
-    "vue-i18n": "11.3.0",
-    "vue-router": "^5.0.4",
-    "vue3-element-admin": "file:",
-    "xlsx": "^0.18.5"
+    "@nuxt/ui": "^4.0.0",
+    "nuxt": "^4.0.0",
+    "vue": "^3.5.0",
+    "vue-router": "^4.0.0"
   },
   "devDependencies": {
-    "@iconify-json/ep": "^1.2.4",
-    "@types/color": "^4.2.1",
-    "@types/lodash": "^4.17.24",
-    "@types/node": "^25.5.0",
-    "@types/nprogress": "^0.2.3",
-    "@types/path-browserify": "^1.0.3",
-    "@types/sockjs-client": "^1.5.4",
-    "@types/sortablejs": "^1.15.9",
-    "@types/stompjs": "^2.3.10",
-    "@typescript-eslint/eslint-plugin": "^8.57.2",
-    "@typescript-eslint/parser": "^8.57.2",
-    "@vitejs/plugin-vue": "^6.0.5",
-    "@vitejs/plugin-vue-jsx": "^5.1.5",
-    "autoprefixer": "^10.4.27",
-    "cz-git": "^1.12.0",
-    "eslint": "^10.2.1",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-prettier": "^5.5.5",
-    "eslint-plugin-vue": "^10.8.0",
-    "fast-glob": "^3.3.3",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.4.0",
-    "postcss": "^8.5.8",
-    "postcss-html": "^1.8.1",
-    "postcss-scss": "^4.0.9",
-    "prettier": "^3.8.1",
-    "sass": "^1.98.0",
-    "stylelint": "^17.6.0",
-    "stylelint-config-html": "^1.1.0",
-    "stylelint-config-recess-order": "^7.7.0",
-    "stylelint-config-recommended-scss": "^17.0.0",
-    "stylelint-config-recommended-vue": "^1.6.1",
-    "stylelint-config-standard": "^40.0.0",
-    "terser": "^5.46.1",
-    "typescript": "^6.0.2",
-    "unocss": "^66.6.7",
-    "unplugin-auto-import": "^21.0.0",
-    "unplugin-icons": "^23.0.1",
-    "unplugin-vue-components": "^32.0.0",
-    "vite": "^8.0.3",
-    "vite-plugin-mock-dev-server": "^2.1.1",
-    "vite-plugin-svg-icons": "^2.0.1",
-    "vite-plugin-vue-devtools": "^8.1.1",
-    "vue-eslint-parser": "^10.4.0",
-    "vue-tsc": "^3.2.6"
+    "typescript": "^5.0.0"
   },
-  "repository": "https://gitee.com/youlaiorg/vue3-element-admin.git",
-  "author": "有来开源组织",
-  "license": "MIT",
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "packageManager": "pnpm@9.1.3+sha512.7c2ea089e1a6af306409c4fc8c4f0897bdac32b772016196c469d9428f1fe2d5a21daf8ad6512762654ac645b5d9136bb210ec9a00afa8dbc4677843ba362ecd"
+  "pnpm": {
+    "overrides": {
+      "vue": "^3.5.0"
+    }
+  }
 }
