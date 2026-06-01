@@ -1,1 +1,0 @@
-import{_ as n,f as t,e as o,D as r}from"./BNUJ5S5Y.js";const s={};function a(c,e){return r(),t("div",null,[...e[0]||(e[0]=[o("h1",null,"Welcome to JOSP-ExaminationSystemVue3",-1)])])}const f=n(s,[["render",a]]);export{f as default};
