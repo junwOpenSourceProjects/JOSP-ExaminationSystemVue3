@@ -29,3 +29,6 @@ coverage/
 package-lock.json
 pnpm-lock.yaml
 stats.htmlThumbs.db
+
+# Legacy Vue2 source backup (removed)
+src.backup/
