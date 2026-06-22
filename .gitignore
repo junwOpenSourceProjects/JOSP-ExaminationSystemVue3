@@ -34,4 +34,7 @@ stats.htmlThumbs.db
 src.backup/
 .nuxt/
 .output/
+.nitro/
 .data/
+.cache/
+.vscode/
