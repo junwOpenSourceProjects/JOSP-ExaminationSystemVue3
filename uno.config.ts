@@ -24,8 +24,10 @@ export default defineConfig({
   },
   theme: {
     colors: {
-      primary: "var(--el-color-primary)",
-      primary_dark: "var(--el-color-primary-light-5)",
+      primary: "var(--color-primary)",
+      brand: "var(--color-brand-blue)",
+      surface: "var(--color-surface)",
+      hairline: "var(--color-hairline)",
     },
   },
   presets: [
