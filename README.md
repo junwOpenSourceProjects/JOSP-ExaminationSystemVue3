@@ -4,7 +4,7 @@
 
 ## 项目简介
 
-JOSP-ExaminationSystemVue3 是一个基于 **Nuxt 4 + Vue 3 + TypeScript** 的在线考试信息管理系统前端。项目当前实现了登录、院校列表查询、学生分页查询等考试相关业务接口，并内置了用户 / 角色 / 菜单 / 部门 / 字典等 RBAC 风格的 Mock 数据模块，为后端管理系统提供前端交互界面。
+JOSP-ExaminationSystemVue3 是一个基于 **Nuxt 4 + Vue 3 + TypeScript** 的在线考试信息管理系统前端。项目当前实现了登录、院校列表查询、学生分页查询等考试相关业务接口，为后端管理系统提供前端交互界面。
 
 主要定位：
 
@@ -26,7 +26,7 @@ graph LR
     end
     G -->|HTTP| H[后端 API / Nitro Server]
     H --> I[(MySQL / 外部数据服务)]
-    B --> J[Mock 数据模块 mock/*.ts]
+    B --> J[Nitro Server / 代理层]
 ```
 
 ## 技术栈
@@ -41,25 +41,24 @@ graph LR
 | [UnoCSS](https://unocss.dev/) | 原子化 CSS 引擎 |
 | [Axios](https://axios-http.com/) | HTTP 客户端 |
 | pnpm | 包管理工具 |
-| ESLint / Prettier / Stylelint / Husky | 代码规范与 Git Hook |
+| ESLint / Prettier | 代码规范 |
 
 ## 项目结构
 
 ```
 /Users/junw/Documents/GitHub/ExaminationSystem/JOSP-ExaminationSystemVue3/
-├── app/                         # 应用逻辑目录
+├── app/                         # Nuxt 4 应用目录
 │   ├── api/                     # 业务 API 封装
 │   │   └── exam.js              # 考试相关接口（登录、院校列表、学生分页等）
+│   ├── assets/                  # 静态资源
+│   │   └── css/main.css         # 全局 CSS 变量与样式
+│   ├── layouts/                 # Nuxt 布局
+│   │   └── default.vue
+│   ├── pages/                   # Nuxt 页面路由
+│   │   └── index.vue
 │   └── utils/                   # 工具函数
 │       └── request.js           # Axios 请求实例，baseURL 指向 /api
 ├── app.vue                      # Nuxt 根组件
-├── assets/                      # 静态资源
-│   └── css/main.css             # 全局 CSS 变量与样式
-├── layouts/                     # Nuxt 布局
-│   └── default.vue
-├── mock/                        # Mock 数据（auth / user / role / menu / dept / dict 等）
-├── pages/                       # Nuxt 页面路由
-│   └── index.vue
 ├── public/                      # 公共静态资源
 │   └── favicon.ico
 ├── .env.development             # 开发环境变量
@@ -72,7 +71,7 @@ graph LR
 └── tsconfig.json                # TypeScript 配置
 ```
 
-> 注：仓库中还包含 `JOSP-MiniMaxApiVue3/` 嵌套目录，用于相关的后端/接口示例，可按需独立使用。
+> 注：本项目仅保留 ExaminationSystem 相关源码，不再包含无关的 MiniMax API 示例目录。
 
 ## 启动方式
 
