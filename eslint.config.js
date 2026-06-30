@@ -22,6 +22,17 @@ export default [
     }
   },
   {
-    ignores: ['.nuxt', '.output', 'node_modules', 'dist']
+    languageOptions: {
+      globals: {
+        useHead: 'readonly',
+        defineNuxtConfig: 'readonly',
+        definePageMeta: 'readonly',
+        useRuntimeConfig: 'readonly',
+        navigateTo: 'readonly'
+      }
+    }
+  },
+  {
+    ignores: ['.nuxt', '.output', 'node_modules', 'dist', '.prettierrc.cjs']
   }
 ]
