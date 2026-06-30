@@ -8,14 +8,12 @@
     </p>
     <div class="flex flex-wrap items-center justify-center gap-4">
       <UButton
-        to="/student/list"
         size="md"
         class="rounded-full px-6 py-3 bg-[var(--color-primary)] text-[var(--color-on-primary)] font-semibold hover:bg-[var(--color-charcoal)]"
       >
         查询学生成绩
       </UButton>
       <UButton
-        to="/academy/list"
         variant="outline"
         size="md"
         class="rounded-full px-6 py-3 border border-[var(--color-ink)] text-[var(--color-ink)] font-semibold hover:bg-[var(--color-surface)]"
