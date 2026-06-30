@@ -8,7 +8,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@nuxt/ui": "^4.9.0",
@@ -17,7 +19,13 @@
     "vue-router": "^5.1.0"
   },
   "devDependencies": {
-    "typescript": "^6.0.3"
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-vue": "^10.0.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.0.0"
   },
   "pnpm": {
     "overrides": {
