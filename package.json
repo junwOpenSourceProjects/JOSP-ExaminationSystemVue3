@@ -13,20 +13,20 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@nuxt/ui": "^4.9.0",
-    "axios": "^1.7.0",
-    "nuxt": "^4.5.1",
-    "vue": "^3.5.39",
-    "vue-router": "^5.1.0"
+    "@nuxt/ui": "^4.12.0",
+    "axios": "^1.20.0",
+    "nuxt": "^4.6.2",
+    "vue": "^3.5.44",
+    "vue-router": "^5.4.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.0.0",
-    "eslint": "^9.0.0",
-    "eslint-config-prettier": "^10.0.0",
-    "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-vue": "^10.0.0",
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.7",
+    "eslint-plugin-vue": "^10.11.1",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.0.0"
+    "typescript-eslint": "^8.72.0"
   },
   "pnpm": {
     "overrides": {
